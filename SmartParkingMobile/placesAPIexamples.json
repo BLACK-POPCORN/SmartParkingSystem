@@ -1,0 +1,251 @@
+{
+    "address_components": [
+        {
+            "long_name": "5094",
+            "short_name": "5094",
+            "types": [Array
+            ]
+        },
+        {
+            "long_name": "Kingsway",
+            "short_name": "Kingsway",
+            "types": [Array
+            ]
+        },
+        {
+            "long_name": "Metrotown",
+            "short_name": "Metrotown",
+            "types": [Array
+            ]
+        },
+        {
+            "long_name": "Burnaby",
+            "short_name": "Burnaby",
+            "types": [Array
+            ]
+        },
+        {
+            "long_name": "Metro Vancouver",
+            "short_name": "Metro Vancouver",
+            "types": [Array
+            ]
+        },
+        {
+            "long_name": "British Columbia",
+            "short_name": "BC",
+            "types": [Array
+            ]
+        },
+        {
+            "long_name": "Canada",
+            "short_name": "CA",
+            "types": [Array
+            ]
+        },
+        {
+            "long_name": "V5H 2E7",
+            "short_name": "V5H 2E7",
+            "types": [Array
+            ]
+        }
+    ],
+    "adr_address": "<span class=\"street-address\">5094 Kingsway</span>, <span class=\"locality\">Burnaby</span>, <span class=\"region\">BC</span> <span class=\"postal-code\">V5H 2E7</span>, <span class=\"country-name\">Canada</span>",
+    "business_status": "OPERATIONAL",
+    "current_opening_hours": {
+        "open_now": true,
+        "periods": [
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ]
+        ],
+        "weekday_text": [
+            "Monday: 10:00 AM – 11:00 PM",
+            "Tuesday: 10:00 AM – 11:00 PM",
+            "Wednesday: 10:00 AM – 11:00 PM",
+            "Thursday: 10:00 AM – 11:00 PM",
+            "Friday: 10:00 AM – 11:00 PM",
+            "Saturday: 10:00 AM – 11:00 PM",
+            "Sunday: 10:00 AM – 11:00 PM"
+        ]
+    },
+    "delivery": true,
+    "dine_in": true,
+    "editorial_summary": {
+        "language": "en",
+        "overview": "Restaurant chain known for its buckets of fried chicken, plus combo meals & sides."
+    },
+    "formatted_address": "5094 Kingsway, Burnaby, BC V5H 2E7, Canada",
+    "formatted_phone_number": "(604) 433-2220",
+    "geometry": {
+        "location": {
+            "lat": 49.22527040000001,
+            "lng": -122.9906529
+        },
+        "viewport": {
+            "northeast": [Object
+            ],
+            "southwest": [Object
+            ]
+        }
+    },
+    "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+    "icon_background_color": "#FF9E67",
+    "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/restaurant_pinlet",
+    "international_phone_number": "+1 604-433-2220",
+    "name": "KFC",
+    "opening_hours": {
+        "open_now": true,
+        "periods": [
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ]
+        ],
+        "weekday_text": [
+            "Monday: 10:00 AM – 11:00 PM",
+            "Tuesday: 10:00 AM – 11:00 PM",
+            "Wednesday: 10:00 AM – 11:00 PM",
+            "Thursday: 10:00 AM – 11:00 PM",
+            "Friday: 10:00 AM – 11:00 PM",
+            "Saturday: 10:00 AM – 11:00 PM",
+            "Sunday: 10:00 AM – 11:00 PM"
+        ]
+    },
+    "photos": [
+        {
+            "height": 4032,
+            "html_attributions": [Array
+            ],
+            "photo_reference": "AelY_CvZrdXliMjLlbkJweKyLTc0yd4aMP8uku4r9-qXo7jUZG3r1XbvPBToEb9PYoxMB5SM6krNmItmPcVvN5OIr-xqr959Z3vLayfHJ4yPGJm2-2CBdNXxSmtIjtaf8A1LDERmqxzNCQeFu0xGd2EBP5gDUEVUB7FMhbsBSeS4IhkeIqr7",
+            "width": 3024
+        },
+        {
+            "height": 531,
+            "html_attributions": [Array
+            ],
+            "photo_reference": "AelY_CudC5hyErOQ7d7v0YAASHD_FqgpuK7tcxZ32JF8L2Ta6aROGbQwZYpM2-R9WM2xjdGLj_J9avw9ufTVLet-OJFDierLgIgnY7-G4MgxxAdce8n0dvQAAf6CLG2WEz3D6d05Qg2ViDBHJLIVQ2OTQOOlZo2dlTsMbCyaAe_VjO48FKdH",
+            "width": 944
+        },
+        {
+            "height": 818,
+            "html_attributions": [Array
+            ],
+            "photo_reference": "AelY_CuNwX9-O5ndvEI-bVBrKrENNRl21V3fl-41dRYREKIIkQbfRECZeOYyeT3P_oW7VxuS-ACvRxrOURHAM6o9GobRiaMryMVUeTYpQ3Z91i_h7tPZwPqyak13MVopcxNV2jkp6loEL74OFOGJ6pv3fDmqcW9OsxGolj4SK9hySkzOVxUZ",
+            "width": 992
+        },
+        {
+            "height": 4032,
+            "html_attributions": [Array
+            ],
+            "photo_reference": "AelY_CvFtBf0HSzWncADkpHxOXetWV-Kxnxeufk_pvKpFoZmfbh6GUsPxSD6Jn7lRFd3DHYUOehc9JY7vt1oQTjknbuTthY_MD8EHxC87j-zZU4bMbsecmvULDhpDRo1I6NyYQzXmImGAW-W1UFXCbxAMyvLo18Yft21NiKfHywAGVbsp1Z1",
+            "width": 3024
+        },
+        {
+            "height": 4000,
+            "html_attributions": [Array
+            ],
+            "photo_reference": "AelY_CsFu6GOOc41Ii_H5f68TgRVoZpwUnjQNaoTZV3_q77Sr7GTwpMNUT-Dce7Wjz21Lgz8K4SZQQ04GPrKpSaWGK3y7OsRfvo-hWNbziyW5X2vvWeZ6XTnl5ElzvspSEAzkakZSey8W7a9tgzIXor5GiJPyYUrp4sWkMTClpolZM_N1mqC",
+            "width": 3000
+        },
+        {
+            "height": 3024,
+            "html_attributions": [Array
+            ],
+            "photo_reference": "AelY_CtSl6Pc8NAWSl7AzL5ZK8c1z1wwpagNB_L_Xoo-GgRpdjTy7pSnV3QRlci8055Y3N9hDAB2ZMLKz_xCnBSr7tTGek4D4mmhaNXHFK6CCXc_3hLGNhO7C6qmPSeeIML26DVxndM3fuwWQBfU-7tyAvpJBMC32QRxSQ1nc5EKU3jrmbed",
+            "width": 4032
+        },
+        {
+            "height": 560,
+            "html_attributions": [Array
+            ],
+            "photo_reference": "AelY_Cuonu9od5B3ImBlcoJyHvUGHjnoj-ieGxUAtzIaeHhd-hVzI6yFcLSlSn1fbOJXwn8INrZIakSYh6gnBB81B6yF14KxVsfh85aNkhF6cS0gzdSjKAy0AUxv6RJaizguDPQst1v4RpBwTXKg8v1k5R_NoCWjzpawEpb39ILhhJRrlF5C",
+            "width": 995
+        },
+        {
+            "height": 2268,
+            "html_attributions": [Array
+            ],
+            "photo_reference": "AelY_CtCvn0E-Ji0cbSz1El5EqEKTiBJjIQMBeDcAavT7zQ8MJyFzqd1LFEacAeIRQHHb9DCDJzQvr1FwfnxTCxl6KI-5Tda20DGmZpDPtYQYjVj7LJWtsLCekREDvq4zs7xSet38h-woRI6tBsQRSaN1rf0cG7ehCi6f_fhKiZRLj0LJm-J",
+            "width": 4032
+        },
+        {
+            "height": 4032,
+            "html_attributions": [Array
+            ],
+            "photo_reference": "AelY_Ctkp0pcgz6wzABu5EY_yta9hhMesDNLcENJF4pTtNXDYyAd0yvJPHGbtL2W_VHathpz_LLZFBec_V-p3O1MNBmaAIeD-WTiSnPYop38B0CCUDcXs4g0Zu3B8aLOT7QwBs9YeBuzyEOoZRtWKFzTroLpqTPA-MYAaCPeZTrY8Mzo-SB-",
+            "width": 3024
+        },
+        {
+            "height": 4032,
+            "html_attributions": [Array
+            ],
+            "photo_reference": "AelY_CtbkLt8KPrKxXWEJRByTLDpxNPxVLW-XeFZC8v_a8rLuQyUOKorpR4ccSgkWrJq82silS78gN74DBG-zLcP-2EvEZRrIuaM09Gl50HHTO1sHG2I9MRHYs7fM9XQPwIUJ9xi1xP_6laYfZPzJQk_OBOGT9xAK4RpDbpzeEp0opfovSag",
+            "width": 3024
+        }
+    ],
+    "place_id": "ChIJ1f9nhFp2hlQRzpgHzwrt7Gg",
+    "plus_code": {
+        "compound_code": "62G5+4P Burnaby, BC, Canada",
+        "global_code": "84XV62G5+4P"
+    },
+    "price_level": 1,
+    "rating": 2.7,
+    "reference": "ChIJ1f9nhFp2hlQRzpgHzwrt7Gg",
+    "reviews": [
+        {
+            "author_name": "Justin Chiu",
+            "author_url": "https://www.google.com/maps/contrib/100180600483850228717/reviews",
+            "language": "en",
+            "original_language": "en",
+            "profile_photo_url": "https://lh3.googleusercontent.com/a/ACg8ocJ_9N7aw0oJEwWj2xtA-Ai29dBImphHg0rEFeXdMkGhLpEv2A=s128-c0x00000000-cc-rp-mo-ba3",
+            "rating": 2,
+            "relative_time_description": "3 months ago",
+            "text": "One of the only drive through KFC around Burnaby. They've always been okay, but tonight was crazy. Went drive through, and they ran out of original chicken at dinnertime. Told me 25-30 minutes. Parked the car, went back in 30 minutes and there were tons of other people waiting for their order as well. Waited a total of 45 minutes after paying at drive through! If that wasn't bad enough, the chicken I received had almost no seasoning. It tasted like plain chicken no salt or anything. Will I be back? Probabaly as it's the only one most convenient to me, but this place needs an overhaul in organization.",
+            "time": 1715144173,
+            "translated": false
+        },
+        {
+            "author_name": "Sinyo ganteng",
+            "author_url": "https://www.google.com/maps/contrib/107111154185686472447/reviews",
+            "language": "en",
+            "original_language": "en",
+            "profile_photo_url": "https://lh3.googleusercontent.com/a-/ALV-UjVK6DhObLW3StVcJ_e9Ph42mdmAq5cSoW-d536hao-jSu7WAn8I=s128-c0x00000000-cc-rp-mo-ba4",
+            "rating": 3,
+            "relative_time_description": "2 months ago",
+            "text": "Firstly,  it's KFC. went there today's and a few other tines as it is closed to my workplace. taste is okay, but I think it is better than the downtown or Vancouver locations. the only downside is their service. It's so slow. Every Tuesday during lunchtime  is very busy, and slow services, unless drive-thru. for Tuesday special, 2 dark meat and fries cost bit over 4 bucks.",
+            "time": 1716957290,
+            "translated": false
+        },
+        {
+            "author_name": "christopher beer",
+            "author_url": "https://www.google.com/maps/contrib/113034313461838502761/reviews",
+            "language": "en",
+            "original_language": "en",
+            "profile_photo_url": "https://lh3.googleusercontent.com/a/ACg8ocKEOLs6vCOLasDgus1RpSiVf5UZYwctooDbdrTfm_O17veg6g=s128-c0x00000000-cc-rp-mo-ba3",
+            "rating": 1,
+            "relative_time_description": "a week ago",
+            "text": "Sold me a Chicken sandwich half of it Raw!!!!
+Took it back, they offered me a new sandwich. Let my number for the manager to contact me, he has not. Ruined my weekend spent most of it in the he bathroom.", "time": 1722970157, "translated": false}, {"author_name": "Bloodyfrostbite c", "author_url": "https: //www.google.com/maps/contrib/100504654867859770251/reviews", "language": "en", "original_language": "en", "profile_photo_url": "https://lh3.googleusercontent.com/a/ACg8ocKh5r14vxUscyCalscRPVUGE_HeYsIUp5XHCvAiy9OsmnCefA=s128-c0x00000000-cc-rp-mo", "rating": 1, "relative_time_description": "a year ago", "text": "Very disappointed service tonight in drive thru.
+I usually go to the one in New Westminister location, which is usually amazing. I thought this location would be the same, but unfortunately, i was very wrong.
+I order a large fry with gravy in my chicken meal with extra sauce on the sandwich but, ended up getting like a small fry half empty, a very flat pop with no Carbonation, sandwiches eith very light sauce and the gravy was like watered  down tasteless and runny. Over all pretty bad experience", "time": 1682658071, "translated": false}, {"author_name": "Blaze Neff", "author_url": "https: //www.google.com/maps/contrib/110329411337987944120/reviews", "language": "en", "original_language": "en", "profile_photo_url": "https://lh3.googleusercontent.com/a-/ALV-UjX1jPzE0azQMsxqANrn6P1-ePjR8shyVpUUaq8XIL_0bryDI_PCDg=s128-c0x00000000-cc-rp-mo-ba3", "rating": 1, "relative_time_description": "a month ago", "text": "Took my order in person then promptly forgot about my order/me. Only after 30 minutes of waiting in front of them, they realized they completely forgot about it. Wasted my time, took 1 hour to get my order", "time": 1720409965, "translated": false}], "secondary_opening_hours": [{"open_now": true, "periods": [Array], "type": "DELIVERY", "weekday_text": [Array]}], "serves_beer": false, "serves_breakfast": false, "serves_dinner": true, "serves_lunch": true, "serves_wine": false, "takeout": true, "types": ["meal_delivery", "restaurant", "food", "point_of_interest", "establishment"], "url": "https://maps.google.com/?cid=7560678505127057614", "user_ratings_total": 759, "utc_offset": -420, "vicinity": "5094 Kingsway, Burnaby", "website": "https://www.kfc.ca/", "wheelchair_accessible_entrance": true}
