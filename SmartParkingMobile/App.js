@@ -39,7 +39,7 @@ function Tabs() {
 
 const AppStack = (
   <>
-    <Stack.Screen name="HomeStack" component={Tabs} options={{ headerShown: false }} />
+    <Stack.Screen name="HomeScreen" component={Tabs} options={{ headerShown: false }} />
     <Stack.Screen name="Parking" component={ParkingScreen} options={{ title: 'Parking List' }} />
   </>
 );
