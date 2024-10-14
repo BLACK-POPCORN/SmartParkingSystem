@@ -24,8 +24,8 @@ const SearchScreen = ({ navigation }) => {
   const [region, setRegion] = useState({
     latitude: singaporeLocation.lat,
     longitude: singaporeLocation.lng,
-    latitudeDelta: 0.001,
-    longitudeDelta: 0.001,
+    latitudeDelta: 0.2,
+    longitudeDelta: 0.2,
   });
 
   useEffect(() => {
@@ -42,8 +42,8 @@ const SearchScreen = ({ navigation }) => {
       setRegion({
         latitude: singaporeLocation.lat,
         longitude: singaporeLocation.lng,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
+        latitudeDelta: 0.2,
+        longitudeDelta: 0.2,
       });
 
       setLocationLoading(false);
@@ -89,36 +89,11 @@ const SearchScreen = ({ navigation }) => {
     try {
       const response = await axios.request(options);
       setPlaces(response.data.results);
-      updateMapRegion(response.data.results);
     } catch (error) {
       console.error('Error fetching places:', error);
     } finally {
       setLoading(false);
     }
-  };
-
-  const updateMapRegion = (places) => {
-    if (places.length === 0) return;
-
-    //Calculate the minimum and maximum latitudes and longitudes
-    const latitudes = places.map(place => place.geometry.location.lat);
-    const longitudes = places.map(place => place.geometry.location.lng);
-
-    const minLat = Math.min(...latitudes);
-    const maxLat = Math.max(...latitudes);
-    const minLng = Math.min(...longitudes);
-    const maxLng = Math.max(...longitudes);
-
-    // Calculate the latitude and longitude deltas based on the furthest points
-    const latitudeDelta = Math.max(Math.abs(maxLat - minLat) - 0.2, 0.0001); // Reduced buffer for smaller zoom
-    const longitudeDelta = Math.max(Math.abs(maxLng - minLng) -0.2, 0.0001); // Reduced buffer for smaller zoom
-    // Keep the center around the initial `region` (e.g., Singapore center)
-    setRegion({
-      latitude: region.latitude,   // Keep center fixed on the initial region
-      longitude: region.longitude, // Keep center fixed on the initial region
-      latitudeDelta, // Updated to fit all places
-      longitudeDelta, // Updated to fit all places
-    });
   };
 
   const getPhotoUrl = (photoReference) => {
