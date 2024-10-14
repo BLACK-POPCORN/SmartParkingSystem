@@ -29,7 +29,7 @@ function Tabs() {
     >
       
       <Tab.Screen
-        name="Home"
+        name="Select Destination"
         component={SearchScreen}
         options={{ tabBarIcon: ({ color, size }) => (<AntDesign name="search1" size={24} color="black" />) }}
       />
@@ -39,7 +39,7 @@ function Tabs() {
 
 const AppStack = (
   <>
-    <Stack.Screen name="HomeScreen" component={Tabs} options={{ headerShown: false }} />
+    <Stack.Screen name="Destination" component={Tabs} options={{ headerShown: false }} />
     <Stack.Screen name="Parking" component={ParkingScreen} options={{ title: 'Parking List' }} />
   </>
 );
