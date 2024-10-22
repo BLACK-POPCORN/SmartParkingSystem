@@ -39,8 +39,71 @@ const ParkingScreen = ({ route }) => {
 
       try {
         const response = await axios.request(options);
-        setParkings(response.data.results); // Use the search results for parking lots
-        updateMapRegion(response.data.results);
+
+        const responseAPI = await fetch(
+          'https://api.data.gov.sg/v1/transport/carpark-availability'
+        );
+        
+        parkingArray=response.data.results
+        const dataAPI = await responseAPI.json(); 
+
+
+
+        const updatedData = parkingArray.map((item1) => {
+          // 查找data2中匹配的carpark_number
+          const matchingCarpark = dataAPI.items[0].carpark_data.find(
+            (item2) => item2.carpark_number === item1.name
+          );
+          
+          // 如果找到了匹配的carpark_number，则合并carpark_info和update_datetime
+          if (matchingCarpark) {
+            return {
+              ...item1,
+              carpark_info_total_lots: matchingCarpark.carpark_info[0].total_lots,
+              carpark_info_available_lots: matchingCarpark.carpark_info[0].lots_available,
+              update_datetime: matchingCarpark.update_datetime,
+            };
+          }
+          
+          // 如果没有匹配，返回原来的data1对象
+          // return {
+          //   ...item1,
+          //   carpark_info_total_lots: 'N/A',
+          //   carpark_info_available_lots: 'N/A',
+          //   update_datetime: 'N/A',
+          // };
+
+          return {
+            ...item1,
+          };
+          
+        });
+        const filteredData = updatedData.filter(item => item.update_datetime);
+        setParkings(filteredData)
+        console.log(parkings);
+        // setMergedData(updatedData);
+
+
+        // const extractNames = (parkingArray) => {
+        //   return parkingArray.map(item => item.name);
+        // };
+      
+        // // Create dataname array
+        // const dataFromgoogle = extractNames(parkingArray);
+        
+        // console.log("datafromgoogle",dataFromgoogle)
+  
+
+        // const filteredData = dataAPI.items[0].carpark_data.filter((item) =>
+        //   dataFromgoogle.includes(item.carpark_number)
+        // ); // 过滤匹配的停车场
+        // setParkingData(filteredData); // 设置过滤后的数据
+
+        // console.log("dataAPIItems",dataAPIItems)
+
+
+        // setParkings(response.data.results); // Use the search results for parking lots
+        // updateMapRegion(response.data.results);
 
       } catch (error) {
         console.error('Error fetching parking lots:', error);
@@ -88,17 +151,27 @@ const ParkingScreen = ({ route }) => {
       style={styles.parkingContainer}
       onLayout={(event) => handleLayout(index, event)}
     >
+
       {item.photos && item.photos.length > 0 && (
         <Image
           source={{ uri: getPhotoUrl(item.photos[0].photo_reference) }}
           style={styles.parkingPhoto}
         />
       )}
-      <Text style={styles.parkingName}>{item.name}</Text>
+      <Text style={styles.parkingName}>{item.name}</Text>      
+      <Text style={styles.parkingName}>{item.carpark_data}</Text>
+
       <Text style={styles.parkingAddress}>{item.formatted_address}</Text>
+
+      <Text style={styles.parkingName}>carpark_info_total_lots : {item.carpark_info_total_lots}</Text>
+      <Text style={styles.parkingName}>carpark_info_available_lots: {item.carpark_info_available_lots}</Text>
+      <Text style={styles.parkingName}>update_datetime: {item.update_datetime}</Text>
       {/* Get parking name through  'item.name' */}
       <Text>Available parking spot(according to api): TODO!!!</Text>
       </View>
+
+
+
   );
 
 
@@ -112,7 +185,7 @@ const ParkingScreen = ({ route }) => {
           data={parkings}
           keyExtractor={(item) => item.place_id.toString()}
           renderItem={renderPlace}
-          ListEmptyComponent={<Text>Sorry! There is no parking lot nearby!</Text>}
+          ListEmptyComponent={<Text>Sorry! There is no public parking lot nearby!</Text>}
           getItemLayout={getItemLayout}
           onScrollToIndexFailed={(info) => {
             console.warn('Failed to scroll to index:', info);
