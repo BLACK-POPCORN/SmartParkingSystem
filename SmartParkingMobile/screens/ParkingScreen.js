@@ -21,6 +21,13 @@ const ParkingScreen = ({ route }) => {
   const [itemHeights, setItemHeights] = useState({});
   const flatListRef = useRef(null);
 
+
+  const [parkingData, setParkingData] = useState([]);
+
+  const [carparkNumber, setCarparkNumber] = useState([]);
+
+
+
   useEffect(() => {
     const fetchParkingLots = async () => {
       setLocationLoading(true);
@@ -39,8 +46,41 @@ const ParkingScreen = ({ route }) => {
 
       try {
         const response = await axios.request(options);
+        // console.log(response.data.results)
+
+
+        const responseAPI = await fetch(
+          'https://api.data.gov.sg/v1/transport/carpark-availability'
+        );
+        
+        parkingArray=response.data.results
+        const dataAPI = await responseAPI.json(); 
+
+
+        const extractNames = (parkingArray) => {
+          return parkingArray.map(item => item.name);
+        };
+      
+        // Create dataname array
+        const dataFromgoogle = extractNames(parkingArray);
+        
+        console.log("datafromgoogle",dataFromgoogle)
+  
+
+        const filteredData = dataAPI.items[0].carpark_data.filter((item) =>
+          dataFromgoogle.includes(item.carpark_number)
+        ); // 过滤匹配的停车场
+        setParkingData(filteredData); // 设置过滤后的数据
+
+        // console.log("dataAPIItems",dataAPIItems)
+
+ 
+
+
         setParkings(response.data.results); // Use the search results for parking lots
         updateMapRegion(response.data.results);
+        // fetchParkingData();
+        // console.log(parkings)
 
       } catch (error) {
         console.error('Error fetching parking lots:', error);
@@ -83,23 +123,35 @@ const ParkingScreen = ({ route }) => {
     setItemHeights((prevHeights) => ({ ...prevHeights, [index]: height }));
   };
 
-  const renderPlace = ({ item, index }) => (
+  // const renderPlace = ({ item, index }) => (
+  //   <View
+  //     style={styles.parkingContainer}
+  //     onLayout={(event) => handleLayout(index, event)}
+  //   >
+  //     {/* {item.photos && item.photos.length > 0 && (
+  //       <Image
+  //         source={{ uri: getPhotoUrl(item.photos[0].photo_reference) }}
+  //         style={styles.parkingPhoto}
+  //       />
+  //     )} */}
+  //     <Text style={styles.parkingName}>{item.name}</Text>
+  //     <Text style={styles.parkingAddress}>{item.formatted_address}</Text>
+  //     {/* Get parking name through  'item.name' */}
+  //     <Text>Available parking spot(according to api): TODO!!!</Text>
+  //     </View>
+  // );
+
+  const renderParkingItem = ({ item }) => (
     <View
-      style={styles.parkingContainer}
-      onLayout={(event) => handleLayout(index, event)}
-    >
-      {item.photos && item.photos.length > 0 && (
-        <Image
-          source={{ uri: getPhotoUrl(item.photos[0].photo_reference) }}
-          style={styles.parkingPhoto}
-        />
-      )}
-      <Text style={styles.parkingName}>{item.name}</Text>
-      <Text style={styles.parkingAddress}>{item.formatted_address}</Text>
-      {/* Get parking name through  'item.name' */}
-      <Text>Available parking spot(according to api): TODO!!!</Text>
-      </View>
+    style={styles.parkingContainer}
+  >
+      <Text style={styles.parkingName}>Carpark: {item.carpark_number}</Text>
+      <Text style={styles.parkingText}>Total lots: {item.carpark_info[0].total_lots}</Text>
+      <Text style={styles.parkingText}>Available lots: {item.carpark_info[0].lots_available}</Text>
+      <Text style={styles.parkingText}>Last updated: {item.update_datetime}</Text>
+    </View>
   );
+
 
 
   return (
@@ -107,17 +159,25 @@ const ParkingScreen = ({ route }) => {
       {loading ? (
         <Text>Loading...</Text>
       ) : (
+        // <FlatList
+        //   ref={flatListRef}
+        //   data={parkings}
+        //   keyExtractor={(item) => item.place_id.toString()}
+        //   renderItem={renderPlace}
+        //   ListEmptyComponent={<Text>Sorry! There is no parking lot nearby!</Text>}
+        //   getItemLayout={getItemLayout}
+        //   onScrollToIndexFailed={(info) => {
+        //     console.warn('Failed to scroll to index:', info);
+        //   }}
+        // />
+
         <FlatList
-          ref={flatListRef}
-          data={parkings}
-          keyExtractor={(item) => item.place_id.toString()}
-          renderItem={renderPlace}
-          ListEmptyComponent={<Text>Sorry! There is no parking lot nearby!</Text>}
-          getItemLayout={getItemLayout}
-          onScrollToIndexFailed={(info) => {
-            console.warn('Failed to scroll to index:', info);
-          }}
+          data={parkingData}
+          renderItem={renderParkingItem}
+          keyExtractor={(item) => item.carpark_number.toString()}
+          ListEmptyComponent={<Text>Sorry! There is no public parking lot nearby!</Text>}
         />
+
       )}
     </View>
   );
