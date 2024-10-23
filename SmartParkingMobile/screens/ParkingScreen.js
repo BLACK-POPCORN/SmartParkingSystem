@@ -166,8 +166,11 @@ const ParkingScreen = ({ route }) => {
       <Text style={styles.parkingName}>carpark_info_total_lots : {item.carpark_info_total_lots}</Text>
       <Text style={styles.parkingName}>carpark_info_available_lots: {item.carpark_info_available_lots}</Text>
       <Text style={styles.parkingName}>update_datetime: {item.update_datetime}</Text>
+
+      <Text style={styles.parkingName}>address: {item.vicinity}</Text>
+
       {/* Get parking name through  'item.name' */}
-      <Text>Available parking spot(according to api): TODO!!!</Text>
+      {/* <Text>Available parking spot(according to api): TODO!!!</Text> */}
       </View>
 
 
