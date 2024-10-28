@@ -115,6 +115,35 @@ const ParkingScreen = ({ route }) => {
     fetchParkingLots(); // Fetch parking lots when the component loads
   }, [destination]);
 
+  function TimeAgo({ datetime }) {
+    const calculateTimeDifference = (datetime) => {
+      // 将输入的时间转换为 Date 对象
+      const updatedTime = new Date(datetime);
+  
+      // 获取当前时间，并转换为新加坡时区的时间
+      const now = new Date();
+      const currentTime = new Date(now);
+  
+      // 计算时间差（以毫秒为单位）
+      const timeDifference = currentTime - updatedTime ;
+  
+      // 将时间差转换为分钟
+      const minutesAgo = Math.floor(timeDifference / (1000 * 60))+900;
+  
+      return `${minutesAgo} minutes ago`;
+    };
+  
+    // 获取当前时间并显示在组件中
+    const nowSingapore = new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' });
+  
+    return (
+      <Text>
+        Update time: {calculateTimeDifference(datetime)}
+      </Text>
+    );
+  }
+  
+  
 
   const getItemLayout = (data, index) => {
     const height = itemHeights[index] || 0; // Default to 0 if height is not measured yet
@@ -151,6 +180,8 @@ const ParkingScreen = ({ route }) => {
       style={styles.parkingContainer}
       onLayout={(event) => handleLayout(index, event)}
     >
+      
+
 
       {item.photos && item.photos.length > 0 && (
         <Image
@@ -159,15 +190,17 @@ const ParkingScreen = ({ route }) => {
         />
       )}
       <Text style={styles.parkingName}>{item.name}</Text>      
-      <Text style={styles.parkingName}>{item.carpark_data}</Text>
+      {/* <Text style={styles.parkingName}>{item.carpark_data}</Text>
 
-      <Text style={styles.parkingAddress}>{item.formatted_address}</Text>
+      <Text style={styles.parkingAddress}>{item.formatted_address}</Text> */}
 
-      <Text style={styles.parkingName}>carpark_info_total_lots : {item.carpark_info_total_lots}</Text>
-      <Text style={styles.parkingName}>carpark_info_available_lots: {item.carpark_info_available_lots}</Text>
-      <Text style={styles.parkingName}>update_datetime: {item.update_datetime}</Text>
+      <Text>percentage of available lots: {((item.carpark_info_available_lots / item.carpark_info_total_lots) * 100).toFixed()}%
+      ({item.carpark_info_available_lots}/{item.carpark_info_total_lots})
+      </Text>
+      {/* <Text style={styles.parkingName}>carpark_info_available_lots: </Text> */}
+      <TimeAgo datetime={item.update_datetime} />
 
-      <Text style={styles.parkingName}>address: {item.vicinity}</Text>
+      <Text >address: {item.vicinity}</Text>
 
       {/* Get parking name through  'item.name' */}
       {/* <Text>Available parking spot(according to api): TODO!!!</Text> */}
