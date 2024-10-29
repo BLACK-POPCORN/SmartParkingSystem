@@ -47,8 +47,6 @@ const ParkingScreen = ({ route }) => {
         parkingArray=response.data.results
         const dataAPI = await responseAPI.json(); 
 
-
-
         const updatedData = parkingArray.map((item1) => {
           // 查找data2中匹配的carpark_number
           const matchingCarpark = dataAPI.items[0].carpark_data.find(
@@ -65,45 +63,16 @@ const ParkingScreen = ({ route }) => {
             };
           }
           
-          // 如果没有匹配，返回原来的data1对象
-          // return {
-          //   ...item1,
-          //   carpark_info_total_lots: 'N/A',
-          //   carpark_info_available_lots: 'N/A',
-          //   update_datetime: 'N/A',
-          // };
-
           return {
             ...item1,
           };
           
         });
+
         const filteredData = updatedData.filter(item => item.update_datetime);
         setParkings(filteredData)
-        console.log(parkings);
-        // setMergedData(updatedData);
-
-
-        // const extractNames = (parkingArray) => {
-        //   return parkingArray.map(item => item.name);
-        // };
-      
-        // // Create dataname array
-        // const dataFromgoogle = extractNames(parkingArray);
-        
-        // console.log("datafromgoogle",dataFromgoogle)
-  
-
-        // const filteredData = dataAPI.items[0].carpark_data.filter((item) =>
-        //   dataFromgoogle.includes(item.carpark_number)
-        // ); // 过滤匹配的停车场
-        // setParkingData(filteredData); // 设置过滤后的数据
-
-        // console.log("dataAPIItems",dataAPIItems)
-
-
-        // setParkings(response.data.results); // Use the search results for parking lots
-        // updateMapRegion(response.data.results);
+        // console.log(parkings);
+ 
 
       } catch (error) {
         console.error('Error fetching parking lots:', error);
@@ -189,18 +158,21 @@ const ParkingScreen = ({ route }) => {
           style={styles.parkingPhoto}
         />
       )}
-      <Text style={styles.parkingName}>{item.name}</Text>      
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={styles.parkingName}>{item.name}</Text>
+        <Text> - Address: {item.vicinity.replace(/, Singapore/g, "")}</Text>
+      </View>
+     
+ 
       {/* <Text style={styles.parkingName}>{item.carpark_data}</Text>
 
       <Text style={styles.parkingAddress}>{item.formatted_address}</Text> */}
 
-      <Text>percentage of available lots: {((item.carpark_info_available_lots / item.carpark_info_total_lots) * 100).toFixed()}%
-      ({item.carpark_info_available_lots}/{item.carpark_info_total_lots})
+      <Text>Real-time Available Lots: {item.carpark_info_available_lots}/{item.carpark_info_total_lots}
       </Text>
       {/* <Text style={styles.parkingName}>carpark_info_available_lots: </Text> */}
-      <TimeAgo datetime={item.update_datetime} />
+      {/* <TimeAgo datetime={item.update_datetime} /> */}
 
-      <Text >address: {item.vicinity}</Text>
 
       {/* Get parking name through  'item.name' */}
       {/* <Text>Available parking spot(according to api): TODO!!!</Text> */}
