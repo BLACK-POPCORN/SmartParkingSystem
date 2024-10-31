@@ -3,13 +3,14 @@ import { StyleSheet, Text, TextInput, View, FlatList, Image, Dimensions, Touchab
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { googlePlacesApiKey } from '@env';
+import MapView, { Marker } from 'react-native-maps';
 
 
 const ParkingScreen = ({ route }) => {
   const navigation = useNavigation();
-  const {destination} = route.params;
+  const { destination } = route.params;
   const [parkings, setParkings] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [locationLoading, setLocationLoading] = useState(true);
   const [region, setRegion] = useState({
     latitude: 49.2827,
@@ -17,7 +18,7 @@ const ParkingScreen = ({ route }) => {
     latitudeDelta: 0.05,
     longitudeDelta: 0.05,
   });
-  const [selectParking, setSelectParking] = useState(null);
+  const [selectedParking, setSelectedParking] = useState(null);
   const [itemHeights, setItemHeights] = useState({});
   const flatListRef = useRef(null);
 
@@ -30,7 +31,7 @@ const ParkingScreen = ({ route }) => {
         url: `https://maps.googleapis.com/maps/api/place/nearbysearch/json`,
         params: {
           location: `${destination.lat},${destination.lng}`, // Use location passed from route.params
-          radius: 1000, // 2 km radius
+          radius: 1000, // 1 km radius
           type: 'parking', // Restrict the search to parking lots
           key: googlePlacesApiKey,
           language: 'en',
@@ -43,16 +44,16 @@ const ParkingScreen = ({ route }) => {
         const responseAPI = await fetch(
           'https://api.data.gov.sg/v1/transport/carpark-availability'
         );
-        
-        parkingArray=response.data.results
-        const dataAPI = await responseAPI.json(); 
+
+        parkingArray = response.data.results
+        const dataAPI = await responseAPI.json();
 
         const updatedData = parkingArray.map((item1) => {
           // 查找data2中匹配的carpark_number
           const matchingCarpark = dataAPI.items[0].carpark_data.find(
             (item2) => item2.carpark_number === item1.name
           );
-          
+
           // 如果找到了匹配的carpark_number，则合并carpark_info和update_datetime
           if (matchingCarpark) {
             return {
@@ -62,18 +63,16 @@ const ParkingScreen = ({ route }) => {
               update_datetime: matchingCarpark.update_datetime,
             };
           }
-          
+
           return {
             ...item1,
           };
-          
+
         });
 
         const filteredData = updatedData.filter(item => item.update_datetime);
         setParkings(filteredData)
-        // console.log(parkings);
- 
-
+        setLocationLoading(false);
       } catch (error) {
         console.error('Error fetching parking lots:', error);
       } finally {
@@ -88,31 +87,31 @@ const ParkingScreen = ({ route }) => {
     const calculateTimeDifference = (datetime) => {
       // 将输入的时间转换为 Date 对象
       const updatedTime = new Date(datetime);
-  
+
       // 获取当前时间，并转换为新加坡时区的时间
       const now = new Date();
       const currentTime = new Date(now);
-  
+
       // 计算时间差（以毫秒为单位）
-      const timeDifference = currentTime - updatedTime ;
-  
+      const timeDifference = currentTime - updatedTime;
+
       // 将时间差转换为分钟
-      const minutesAgo = Math.floor(timeDifference / (1000 * 60))+900;
-  
+      const minutesAgo = Math.floor(timeDifference / (1000 * 60)) + 900;
+
       return `${minutesAgo} minutes ago`;
     };
-  
+
     // 获取当前时间并显示在组件中
     const nowSingapore = new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' });
-  
+
     return (
       <Text>
         Update time: {calculateTimeDifference(datetime)}
       </Text>
     );
   }
-  
-  
+
+
 
   const getItemLayout = (data, index) => {
     const height = itemHeights[index] || 0; // Default to 0 if height is not measured yet
@@ -149,42 +148,49 @@ const ParkingScreen = ({ route }) => {
       style={styles.parkingContainer}
       onLayout={(event) => handleLayout(index, event)}
     >
-      
 
-
-      {item.photos && item.photos.length > 0 && (
-        <Image
-          source={{ uri: getPhotoUrl(item.photos[0].photo_reference) }}
-          style={styles.parkingPhoto}
-        />
-      )}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Text style={styles.parkingName}>{item.name}</Text>
         <Text> - Address: {item.vicinity.replace(/, Singapore/g, "")}</Text>
       </View>
-     
- 
-      {/* <Text style={styles.parkingName}>{item.carpark_data}</Text>
-
-      <Text style={styles.parkingAddress}>{item.formatted_address}</Text> */}
-
-      <Text>Real-time Available Lots: {item.carpark_info_available_lots}/{item.carpark_info_total_lots}
-      </Text>
-      {/* <Text style={styles.parkingName}>carpark_info_available_lots: </Text> */}
-      {/* <TimeAgo datetime={item.update_datetime} /> */}
-
-
-      {/* Get parking name through  'item.name' */}
-      {/* <Text>Available parking spot(according to api): TODO!!!</Text> */}
-      </View>
-
-
-
+      <Text>Real-time Available Lots: {item.carpark_info_available_lots}/{item.carpark_info_total_lots}</Text>
+    </View>
   );
 
+  if (locationLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Fetching location...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
+      <MapView style={styles.map} region={destination}>
+        <Marker
+          coordinate={{
+            latitude: destination.lat,
+            longitude: destination.lng,
+          }}
+          title="Destination"
+          description="This is your destination"
+          pinColor="blue"
+        />
+        {parkings.map((parking) => (
+          <Marker
+            key={parking.place_id}
+            coordinate={{
+              latitude: parking.geometry.location.lat,
+              longitude: parking.geometry.location.lng,
+            }}
+            title={parking.name}
+            description={parking.formatted_address}
+            onPress={() => setSelectedParking(restaurant)}
+          />
+        ))}
+      </MapView>
       {loading ? (
         <Text>Loading...</Text>
       ) : (
