@@ -13,10 +13,10 @@ const ParkingScreen = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [locationLoading, setLocationLoading] = useState(true);
   const [region, setRegion] = useState({
-    latitude: 49.2827,
-    longitude: -123.1207,
-    latitudeDelta: 0.05,
-    longitudeDelta: 0.05,
+    latitude: destination.lat,
+    longitude: destination.lng,
+    latitudeDelta: 0.004,
+    longitudeDelta: 0.004,
   });
   const [selectedParking, setSelectedParking] = useState(null);
   const [itemHeights, setItemHeights] = useState({});
@@ -82,6 +82,17 @@ const ParkingScreen = ({ route }) => {
 
     fetchParkingLots(); // Fetch parking lots when the component loads
   }, [destination]);
+
+  useEffect(() => {
+    if (selectedParking && parkings.length > 0 && flatListRef.current) {
+      const index = parkings.findIndex(
+        (parking) => parking.place_id === selectedParking.place_id
+      );
+      if (index !== -1) {
+        flatListRef.current.scrollToIndex({ index });
+      }
+    }
+  }, [selectedParking, parkings]);
 
   function TimeAgo({ datetime }) {
     const calculateTimeDifference = (datetime) => {
@@ -168,11 +179,11 @@ const ParkingScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} region={destination}>
+      <MapView style={styles.map} region={region}>
         <Marker
           coordinate={{
-            latitude: destination.lat,
-            longitude: destination.lng,
+            latitude: region.latitude,
+            longitude: region.longitude,
           }}
           title="Destination"
           description="This is your destination"
@@ -187,7 +198,7 @@ const ParkingScreen = ({ route }) => {
             }}
             title={parking.name}
             description={parking.formatted_address}
-            onPress={() => setSelectedParking(restaurant)}
+            onPress={() => setSelectedParking(parking)}
           />
         ))}
       </MapView>
