@@ -3,6 +3,7 @@ import { StyleSheet, Text, TextInput, View, FlatList, Image, Dimensions, Touchab
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { googlePlacesApiKey } from '@env';
+import {xApiKey} from '@env';
 
 
 const ParkingScreen = ({ route }) => {
@@ -29,7 +30,7 @@ const ParkingScreen = ({ route }) => {
         const response = await fetch('https://fb63u8anv3.execute-api.us-west-1.amazonaws.com/prod/predict', {
           method: 'POST',
           headers: {
-            'x-api-key': 'DkWrgFBeBi4GrgNn0b4gU1lXd2SdbloXaQhPT9LZ',
+            'x-api-key': xApiKey,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
