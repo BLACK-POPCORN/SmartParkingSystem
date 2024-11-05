@@ -20,8 +20,39 @@ const ParkingScreen = ({ route }) => {
   const [selectParking, setSelectParking] = useState(null);
   const [itemHeights, setItemHeights] = useState({});
   const flatListRef = useRef(null);
+  const [prediction, setPrediction] = useState(null);
 
   useEffect(() => {
+
+    const fetchPrediction = async (modelName) => {
+      try {
+        const response = await fetch('https://fb63u8anv3.execute-api.us-west-1.amazonaws.com/prod/predict', {
+          method: 'POST',
+          headers: {
+            'x-api-key': 'DkWrgFBeBi4GrgNn0b4gU1lXd2SdbloXaQhPT9LZ',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model_name: modelName
+          })
+        });
+  
+        const data = await response.json();
+  
+        // 更新预测结果
+        if (data.predictions && data.predictions.length > 0) {
+          console.log("prediction is nihao", data.predictions[0][0])
+          return data.predictions[0][0];
+          setPrediction(data.predictions[0][0]);
+        } else {
+          return "No predictions found";
+          setPrediction("No predictions found");
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        setPrediction("Error fetching prediction");
+      }}
+
     const fetchParkingLots = async () => {
       setLocationLoading(true);
 
@@ -47,31 +78,59 @@ const ParkingScreen = ({ route }) => {
         parkingArray=response.data.results
         const dataAPI = await responseAPI.json(); 
 
-        const updatedData = parkingArray.map((item1) => {
-          // 查找data2中匹配的carpark_number
+        // const updatedData = await Promise.all(parkingArray.map((item1) => {
+        //   // 查找data2中匹配的carpark_number
+        //   const matchingCarpark = dataAPI.items[0].carpark_data.find(
+        //     (item2) => item2.carpark_number === item1.name
+        //   );
+          
+        //   // 如果找到了匹配的carpark_number，则合并carpark_info和update_datetime
+        //   if (matchingCarpark) {
+        //     // console.log("matching parking is ", matchingCarpark)
+        //     predictionFromAPI =  fetchPrediction(item1.name);
+        //     console.log(predictionFromAPI)
+
+        //     return {
+        //       ...item1,
+        //       carpark_info_total_lots: matchingCarpark.carpark_info[0].total_lots,
+        //       carpark_info_available_lots: matchingCarpark.carpark_info[0].lots_available,
+        //       update_datetime: matchingCarpark.update_datetime,
+        //       prediction: predictionFromAPI,
+        //     };
+        //   }
+          
+        //   return {
+        //     ...item1,
+        //   };
+          
+        // }));
+
+        const updatedData = await Promise.all(parkingArray.map(async (item1) => {
           const matchingCarpark = dataAPI.items[0].carpark_data.find(
             (item2) => item2.carpark_number === item1.name
           );
           
-          // 如果找到了匹配的carpark_number，则合并carpark_info和update_datetime
           if (matchingCarpark) {
+            // 确保使用 await 获取解析后的预测结果
+            const predictionFromAPI = await fetchPrediction(item1.name);
+        
             return {
               ...item1,
               carpark_info_total_lots: matchingCarpark.carpark_info[0].total_lots,
               carpark_info_available_lots: matchingCarpark.carpark_info[0].lots_available,
               update_datetime: matchingCarpark.update_datetime,
+              prediction: predictionFromAPI,  // 现在 prediction 是正确的解析结果
             };
           }
           
           return {
             ...item1,
           };
-          
-        });
+        }));
 
         const filteredData = updatedData.filter(item => item.update_datetime);
+        console.log(filteredData)
         setParkings(filteredData)
-        // console.log(parkings);
  
 
       } catch (error) {
@@ -82,37 +141,9 @@ const ParkingScreen = ({ route }) => {
     };
 
     fetchParkingLots(); // Fetch parking lots when the component loads
+    fetchPrediction("A100");
   }, [destination]);
 
-  function TimeAgo({ datetime }) {
-    const calculateTimeDifference = (datetime) => {
-      // 将输入的时间转换为 Date 对象
-      const updatedTime = new Date(datetime);
-  
-      // 获取当前时间，并转换为新加坡时区的时间
-      const now = new Date();
-      const currentTime = new Date(now);
-  
-      // 计算时间差（以毫秒为单位）
-      const timeDifference = currentTime - updatedTime ;
-  
-      // 将时间差转换为分钟
-      const minutesAgo = Math.floor(timeDifference / (1000 * 60))+900;
-  
-      return `${minutesAgo} minutes ago`;
-    };
-  
-    // 获取当前时间并显示在组件中
-    const nowSingapore = new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' });
-  
-    return (
-      <Text>
-        Update time: {calculateTimeDifference(datetime)}
-      </Text>
-    );
-  }
-  
-  
 
   const getItemLayout = (data, index) => {
     const height = itemHeights[index] || 0; // Default to 0 if height is not measured yet
@@ -169,6 +200,8 @@ const ParkingScreen = ({ route }) => {
       <Text style={styles.parkingAddress}>{item.formatted_address}</Text> */}
 
       <Text>Real-time Available Lots: {item.carpark_info_available_lots}/{item.carpark_info_total_lots}
+      </Text>
+      <Text>prediction Lots: {item.prediction}
       </Text>
       {/* <Text style={styles.parkingName}>carpark_info_available_lots: </Text> */}
       {/* <TimeAgo datetime={item.update_datetime} /> */}
