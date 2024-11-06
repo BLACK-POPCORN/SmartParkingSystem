@@ -15,8 +15,8 @@ const ParkingScreen = ({ route }) => {
   const [region, setRegion] = useState({
     latitude: destination.lat,
     longitude: destination.lng,
-    latitudeDelta: 0.004,
-    longitudeDelta: 0.004,
+    latitudeDelta: 0.006,
+    longitudeDelta: 0.008,
   });
   const [selectedParking, setSelectedParking] = useState(null);
   const [itemHeights, setItemHeights] = useState({});
@@ -168,6 +168,45 @@ const ParkingScreen = ({ route }) => {
     </View>
   );
 
+  const getMarkerColor = (availableLots) => {
+    if (availableLots > 10) {
+      return "green"; 
+    } else if (availableLots > 5) {
+      return "yellow"; 
+    } else {
+      return "red";
+    }
+  };
+
+
+  const Legend = () => {
+    return (
+      <View style={styles.legendContainer}>
+        <Text style={styles.legendTitle}>Parking Availability</Text>
+        <View style={styles.legendRow}>
+          <View style={styles.legendItem}>
+            <View style={[styles.colorBox, { backgroundColor: 'green' }]} />
+            <Text style={styles.legendText}>10+ Lots</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={[styles.colorBox, { backgroundColor: 'yellow' }]} />
+            <Text style={styles.legendText}>5-10 Lots</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={[styles.colorBox, { backgroundColor: 'red' }]} />
+            <Text style={styles.legendText}>{"<"} 5 Lots</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={[styles.colorBox, { backgroundColor: 'blue' }]} />
+            <Text style={styles.legendText}>Destination</Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
+  
+
+
   if (locationLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -197,11 +236,13 @@ const ParkingScreen = ({ route }) => {
               longitude: parking.geometry.location.lng,
             }}
             title={parking.name}
-            description={parking.formatted_address}
+            description={`Available: ${parking.carpark_info_available_lots}/${parking.carpark_info_total_lots}`}
+            pinColor={getMarkerColor(parking.carpark_info_available_lots)}
             onPress={() => setSelectedParking(parking)}
           />
         ))}
       </MapView>
+      <Legend />
       {loading ? (
         <Text>Loading...</Text>
       ) : (
@@ -269,5 +310,36 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  legendContainer: {
+    padding: 10,
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderColor: '#ccc',
+  },
+  legendTitle: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  legendRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 5,
+  },
+  colorBox: {
+    width: 15,
+    height: 15,
+    marginRight: 5,
+    borderRadius: 3,
+  },
+  legendText: {
+    fontSize: 14,
+    color: '#333',
   },
 });
