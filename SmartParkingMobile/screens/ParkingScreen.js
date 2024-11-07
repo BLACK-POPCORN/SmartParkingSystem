@@ -7,14 +7,25 @@ import {xApiKey} from '@env';
 
 
 const ParkingScreen = ({ route }) => {
+  console.log("route is",route)
   const navigation = useNavigation();
   const {destination} = route.params;
   const [parkings, setParkings] = useState([]);
   const [loading, setLoading] = useState(false);
   const [locationLoading, setLocationLoading] = useState(true);
+  const [driveTime, setDriveTime] = useState(null);
+
+  // const [region, setRegion] = useState({
+  //   latitude: 49.2827,
+  //   longitude: -123.1207,
+  //   latitudeDelta: 0.05,
+  //   longitudeDelta: 0.05,
+  // });
+
+
   const [region, setRegion] = useState({
-    latitude: 49.2827,
-    longitude: -123.1207,
+    latitude: route.params.currentLocation.latitude,
+    longitude: route.params.currentLocation.longitude,
     latitudeDelta: 0.05,
     longitudeDelta: 0.05,
   });
@@ -53,6 +64,65 @@ const ParkingScreen = ({ route }) => {
         console.error('Error:', error);
         setPrediction("Error fetching prediction");
       }}
+
+    
+      const getDriveTime = async (location) => {
+        if (!route.params.destination) {
+          Alert.alert("Wrong location");
+          return;
+        }
+        // {"lat": 1.3816929, "lng": 103.8450516}
+
+        const options = {
+          method: 'GET',
+          url: 'https://maps.googleapis.com/maps/api/distancematrix/json',
+          params: {
+            origins: `${region.latitude},${region.longitude}`,
+            // destinations: `1.3816929,103.8450516`,
+
+            destinations: `${location.lat},${location.lng}`,
+            mode: 'driving', // 指定为驾车模式
+            key: googlePlacesApiKey,
+          },
+        };
+
+        try {
+          const response = await axios.request(options);
+          const result = response.data.rows[0].elements[0];
+          if (result.status === 'OK') {
+            console.log("driving time",result.duration.value)
+            return result.duration.value
+            setDriveTime(result.duration.text); // 设置驾车时间
+          } else {
+            return "cannot get the driving time"
+            Alert.alert("cannot get the driving time");
+          }
+        } catch (error) {
+          console.error(error);
+          Alert.alert("cannot connect to Google Maps API");
+        }
+      };
+
+      //   try {
+
+          
+      //     const response = await axios.get(
+      //       `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${region.latitude},&destinations=${destination}&mode=driving&key=${GOOGLE_API_KEY}`
+      //     );
+
+        
+    
+      //     const result = response.data.rows[0].elements[0];
+      //     if (result.status === 'OK') {
+      //       setDriveTime(result.duration.text);
+      //     } else {
+      //       Alert.alert("错误", "无法获取驾车时间");
+      //     }
+      //   } catch (error) {
+      //     console.error(error);
+      //     Alert.alert("网络错误", "无法连接到 Google Maps API");
+      //   }
+      // };
 
     const fetchParkingLots = async () => {
       setLocationLoading(true);
@@ -114,6 +184,12 @@ const ParkingScreen = ({ route }) => {
           if (matchingCarpark) {
             // 确保使用 await 获取解析后的预测结果
             const predictionFromAPI = await fetchPrediction(item1.name);
+            // console.log("location is",item1.geometry.lication)
+            // const drivingTimeFromGoogle = await getDriveTime(item1.geometry.location);
+            const drivingTimeFromGoogle = 15000;
+
+            console.log("result is,",drivingTimeFromGoogle)
+
         
             return {
               ...item1,
@@ -121,6 +197,7 @@ const ParkingScreen = ({ route }) => {
               carpark_info_available_lots: matchingCarpark.carpark_info[0].lots_available,
               update_datetime: matchingCarpark.update_datetime,
               prediction: predictionFromAPI,  // 现在 prediction 是正确的解析结果
+              drivingTime:drivingTimeFromGoogle,
             };
           }
           
@@ -143,6 +220,7 @@ const ParkingScreen = ({ route }) => {
 
     fetchParkingLots(); // Fetch parking lots when the component loads
     fetchPrediction("A100");
+    // getDriveTime();
   }, [destination]);
 
 
@@ -202,7 +280,10 @@ const ParkingScreen = ({ route }) => {
 
       <Text>Real-time Available Lots: {item.carpark_info_available_lots}/{item.carpark_info_total_lots}
       </Text>
-      <Text>prediction Lots: {item.prediction}
+      <Text>prediction Lots: {Math.floor(item.prediction)}
+      </Text>
+
+      <Text>driving time:  {(item.drivingTime / 60).toFixed(1)} mins
       </Text>
       {/* <Text style={styles.parkingName}>carpark_info_available_lots: </Text> */}
       {/* <TimeAgo datetime={item.update_datetime} /> */}
