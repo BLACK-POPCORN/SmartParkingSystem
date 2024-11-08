@@ -6,7 +6,7 @@ export const colors = {
     currentLocation: 'blue',
     textDark: '#333',
     textLight: '#777',
-    orchidBG: 'mediumorchid',
+    barBG: 'lightslategrey',
     headerText: '#FFFFFF',
     rippleEffect: 'darkseagreen',
     alertIcon: '#FFD700',
@@ -41,10 +41,10 @@ export const commonStyles = StyleSheet.create({
 // Define screen options for navigators
 export const screenOptions = {
     headerStyle: {
-        backgroundColor: colors.orchidBG,
+        backgroundColor: colors.barBG,
     },
     headerTintColor: colors.headerText,
-    tabBarStyle: { backgroundColor: colors.orchidBG },
+    tabBarStyle: { backgroundColor: colors.barBG },
     tabBarActiveTintColor: colors.alertIcon,
     tabBarInactiveTintColor: colors.headerText,
 };
