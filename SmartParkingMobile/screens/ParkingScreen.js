@@ -20,7 +20,18 @@ const ParkingScreen = ({ route }) => {
   });
   const [selectedParking, setSelectedParking] = useState(null);
   const [itemHeights, setItemHeights] = useState({});
+  const [sortOption, setSortOption] = useState('distance'); // Default sort by distance
   const flatListRef = useRef(null);
+
+  // Sorting function based on selected option
+  const sortParkings = (parkings) => {
+    if (sortOption === 'distance') {
+      return parkings; // Already sorted by distance in search results
+    } else if (sortOption === 'availableLots') {
+      return parkings.sort((a, b) => b.carpark_info_available_lots - a.carpark_info_available_lots);
+    }
+    return parkings;
+  };
 
   useEffect(() => {
     const fetchParkingLots = async () => {
@@ -71,7 +82,7 @@ const ParkingScreen = ({ route }) => {
         });
 
         const filteredData = updatedData.filter(item => item.update_datetime);
-        setParkings(filteredData)
+        setParkings(sortParkings(filteredData)) // Set sorted parking data
         setLocationLoading(false);
       } catch (error) {
         console.error('Error fetching parking lots:', error);
@@ -81,7 +92,7 @@ const ParkingScreen = ({ route }) => {
     };
 
     fetchParkingLots(); // Fetch parking lots when the component loads
-  }, [destination]);
+  }, [destination, sortOption]); // Reload data when sort option changes
 
   useEffect(() => {
     if (selectedParking && parkings.length > 0 && flatListRef.current) {
@@ -204,8 +215,26 @@ const ParkingScreen = ({ route }) => {
       </View>
     );
   };
-  
 
+   // Render sort buttons
+   const renderSortButtons = () => (
+    <View style={styles.buttonContainer}>
+      <TouchableOpacity
+        style={[styles.sortButton, sortOption === 'availableLots' && styles.activeButton]}
+        onPress={() => setSortOption('availableLots')}
+      >
+        <Text style={[styles.buttonText, sortOption === 'availableLots' && styles.activeButtonText]}>Sort by Available Lots</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.sortButton, sortOption === 'distance' && styles.activeButton]}
+        onPress={() => setSortOption('distance')}
+      >
+        <Text style={[styles.buttonText, sortOption === 'distance' && styles.activeButtonText]}>Sort by Distance</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  
 
   if (locationLoading) {
     return (
@@ -243,6 +272,7 @@ const ParkingScreen = ({ route }) => {
         ))}
       </MapView>
       <Legend />
+      {renderSortButtons()}
       {loading ? (
         <Text>Loading...</Text>
       ) : (
@@ -258,6 +288,7 @@ const ParkingScreen = ({ route }) => {
           }}
         />
       )}
+
     </View>
   );
 };
@@ -269,19 +300,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     paddingLeft: 0,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  searchInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
-    padding: 10,
-    marginRight: 10,
   },
   map: {
     width: Dimensions.get('window').width,
@@ -299,12 +317,6 @@ const styles = StyleSheet.create({
   parkingAddress: {
     fontSize: 14,
     color: '#666',
-  },
-  parkingPhoto: {
-    width: '100%',
-    height: 150,
-    marginTop: 10,
-    borderRadius: 4,
   },
   loadingContainer: {
     flex: 1,
@@ -341,5 +353,29 @@ const styles = StyleSheet.create({
   legendText: {
     fontSize: 14,
     color: '#333',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 6,
+  },
+  sortButton: {
+    flex: 1, // Make both buttons take equal space
+    paddingVertical: 5,
+    borderRadius: 5,
+    backgroundColor: 'lightgrey', // Light gray background for inactive button
+    marginHorizontal: 5,
+    alignItems: 'center', // Center text within the button
+  },
+  activeButton: {
+    backgroundColor: '#007AFF', // Blue background for active button
+  },
+  buttonText: {
+    color: '#8E8E93', // Light gray text for inactive button
+    fontSize: 15,
+    fontWeight: 'bold',
+  },
+  activeButtonText: {
+    color: 'white', // White text for active button
   },
 });
