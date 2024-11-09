@@ -3,23 +3,35 @@ import { StyleSheet, Text, TextInput, View, FlatList, Image, Dimensions, Touchab
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { googlePlacesApiKey } from '@env';
+import MapView, { Marker } from 'react-native-maps';
 
 
 const ParkingScreen = ({ route }) => {
   const navigation = useNavigation();
-  const {destination} = route.params;
+  const { destination } = route.params;
   const [parkings, setParkings] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [locationLoading, setLocationLoading] = useState(true);
   const [region, setRegion] = useState({
-    latitude: 49.2827,
-    longitude: -123.1207,
-    latitudeDelta: 0.05,
-    longitudeDelta: 0.05,
+    latitude: destination.lat,
+    longitude: destination.lng,
+    latitudeDelta: 0.006,
+    longitudeDelta: 0.008,
   });
-  const [selectParking, setSelectParking] = useState(null);
+  const [selectedParking, setSelectedParking] = useState(null);
   const [itemHeights, setItemHeights] = useState({});
+  const [sortOption, setSortOption] = useState('distance'); // Default sort by distance
   const flatListRef = useRef(null);
+
+  // Sorting function based on selected option
+  const sortParkings = (parkings) => {
+    if (sortOption === 'distance') {
+      return parkings; // Already sorted by distance in search results
+    } else if (sortOption === 'availableLots') {
+      return parkings.sort((a, b) => b.carpark_info_available_lots - a.carpark_info_available_lots);
+    }
+    return parkings;
+  };
 
   useEffect(() => {
     const fetchParkingLots = async () => {
@@ -30,7 +42,7 @@ const ParkingScreen = ({ route }) => {
         url: `https://maps.googleapis.com/maps/api/place/nearbysearch/json`,
         params: {
           location: `${destination.lat},${destination.lng}`, // Use location passed from route.params
-          radius: 1000, // 2 km radius
+          radius: 1000, // 1 km radius
           type: 'parking', // Restrict the search to parking lots
           key: googlePlacesApiKey,
           language: 'en',
@@ -43,16 +55,16 @@ const ParkingScreen = ({ route }) => {
         const responseAPI = await fetch(
           'https://api.data.gov.sg/v1/transport/carpark-availability'
         );
-        
-        parkingArray=response.data.results
-        const dataAPI = await responseAPI.json(); 
+
+        parkingArray = response.data.results
+        const dataAPI = await responseAPI.json();
 
         const updatedData = parkingArray.map((item1) => {
           // 查找data2中匹配的carpark_number
           const matchingCarpark = dataAPI.items[0].carpark_data.find(
             (item2) => item2.carpark_number === item1.name
           );
-          
+
           // 如果找到了匹配的carpark_number，则合并carpark_info和update_datetime
           if (matchingCarpark) {
             return {
@@ -62,18 +74,16 @@ const ParkingScreen = ({ route }) => {
               update_datetime: matchingCarpark.update_datetime,
             };
           }
-          
+
           return {
             ...item1,
           };
-          
+
         });
 
         const filteredData = updatedData.filter(item => item.update_datetime);
-        setParkings(filteredData)
-        // console.log(parkings);
- 
-
+        setParkings(sortParkings(filteredData)) // Set sorted parking data
+        setLocationLoading(false);
       } catch (error) {
         console.error('Error fetching parking lots:', error);
       } finally {
@@ -82,37 +92,48 @@ const ParkingScreen = ({ route }) => {
     };
 
     fetchParkingLots(); // Fetch parking lots when the component loads
-  }, [destination]);
+  }, [destination, sortOption]); // Reload data when sort option changes
+
+  useEffect(() => {
+    if (selectedParking && parkings.length > 0 && flatListRef.current) {
+      const index = parkings.findIndex(
+        (parking) => parking.place_id === selectedParking.place_id
+      );
+      if (index !== -1) {
+        flatListRef.current.scrollToIndex({ index });
+      }
+    }
+  }, [selectedParking, parkings]);
 
   function TimeAgo({ datetime }) {
     const calculateTimeDifference = (datetime) => {
       // 将输入的时间转换为 Date 对象
       const updatedTime = new Date(datetime);
-  
+
       // 获取当前时间，并转换为新加坡时区的时间
       const now = new Date();
       const currentTime = new Date(now);
-  
+
       // 计算时间差（以毫秒为单位）
-      const timeDifference = currentTime - updatedTime ;
-  
+      const timeDifference = currentTime - updatedTime;
+
       // 将时间差转换为分钟
-      const minutesAgo = Math.floor(timeDifference / (1000 * 60))+900;
-  
+      const minutesAgo = Math.floor(timeDifference / (1000 * 60)) + 900;
+
       return `${minutesAgo} minutes ago`;
     };
-  
+
     // 获取当前时间并显示在组件中
     const nowSingapore = new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' });
-  
+
     return (
       <Text>
         Update time: {calculateTimeDifference(datetime)}
       </Text>
     );
   }
-  
-  
+
+
 
   const getItemLayout = (data, index) => {
     const height = itemHeights[index] || 0; // Default to 0 if height is not measured yet
@@ -149,42 +170,109 @@ const ParkingScreen = ({ route }) => {
       style={styles.parkingContainer}
       onLayout={(event) => handleLayout(index, event)}
     >
-      
 
-
-      {item.photos && item.photos.length > 0 && (
-        <Image
-          source={{ uri: getPhotoUrl(item.photos[0].photo_reference) }}
-          style={styles.parkingPhoto}
-        />
-      )}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Text style={styles.parkingName}>{item.name}</Text>
         <Text> - Address: {item.vicinity.replace(/, Singapore/g, "")}</Text>
       </View>
-     
- 
-      {/* <Text style={styles.parkingName}>{item.carpark_data}</Text>
-
-      <Text style={styles.parkingAddress}>{item.formatted_address}</Text> */}
-
-      <Text>Real-time Available Lots: {item.carpark_info_available_lots}/{item.carpark_info_total_lots}
-      </Text>
-      {/* <Text style={styles.parkingName}>carpark_info_available_lots: </Text> */}
-      {/* <TimeAgo datetime={item.update_datetime} /> */}
-
-
-      {/* Get parking name through  'item.name' */}
-      {/* <Text>Available parking spot(according to api): TODO!!!</Text> */}
-      </View>
-
-
-
+      <Text>Real-time Available Lots: {item.carpark_info_available_lots}/{item.carpark_info_total_lots}</Text>
+    </View>
   );
 
+  const getMarkerColor = (availableLots) => {
+    if (availableLots > 10) {
+      return "green"; 
+    } else if (availableLots > 5) {
+      return "yellow"; 
+    } else {
+      return "red";
+    }
+  };
+
+
+  const Legend = () => {
+    return (
+      <View style={styles.legendContainer}>
+        <Text style={styles.legendTitle}>Parking Availability</Text>
+        <View style={styles.legendRow}>
+          <View style={styles.legendItem}>
+            <View style={[styles.colorBox, { backgroundColor: 'green' }]} />
+            <Text style={styles.legendText}>10+ Lots</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={[styles.colorBox, { backgroundColor: 'yellow' }]} />
+            <Text style={styles.legendText}>5-10 Lots</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={[styles.colorBox, { backgroundColor: 'red' }]} />
+            <Text style={styles.legendText}>{"<"} 5 Lots</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={[styles.colorBox, { backgroundColor: 'blue' }]} />
+            <Text style={styles.legendText}>Destination</Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+   // Render sort buttons
+   const renderSortButtons = () => (
+    <View style={styles.buttonContainer}>
+      <TouchableOpacity
+        style={[styles.sortButton, sortOption === 'availableLots' && styles.activeButton]}
+        onPress={() => setSortOption('availableLots')}
+      >
+        <Text style={[styles.buttonText, sortOption === 'availableLots' && styles.activeButtonText]}>Sort by Available Lots</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.sortButton, sortOption === 'distance' && styles.activeButton]}
+        onPress={() => setSortOption('distance')}
+      >
+        <Text style={[styles.buttonText, sortOption === 'distance' && styles.activeButtonText]}>Sort by Distance</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  
+
+  if (locationLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Fetching location...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
+      <MapView style={styles.map} region={region}>
+        <Marker
+          coordinate={{
+            latitude: region.latitude,
+            longitude: region.longitude,
+          }}
+          title="Destination"
+          description="This is your destination"
+          pinColor="blue"
+        />
+        {parkings.map((parking) => (
+          <Marker
+            key={parking.place_id}
+            coordinate={{
+              latitude: parking.geometry.location.lat,
+              longitude: parking.geometry.location.lng,
+            }}
+            title={parking.name}
+            description={`Available: ${parking.carpark_info_available_lots}/${parking.carpark_info_total_lots}`}
+            pinColor={getMarkerColor(parking.carpark_info_available_lots)}
+            onPress={() => setSelectedParking(parking)}
+          />
+        ))}
+      </MapView>
+      <Legend />
+      {renderSortButtons()}
       {loading ? (
         <Text>Loading...</Text>
       ) : (
@@ -200,6 +288,7 @@ const ParkingScreen = ({ route }) => {
           }}
         />
       )}
+
     </View>
   );
 };
@@ -211,19 +300,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     paddingLeft: 0,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  searchInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
-    padding: 10,
-    marginRight: 10,
   },
   map: {
     width: Dimensions.get('window').width,
@@ -242,15 +318,64 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
   },
-  parkingPhoto: {
-    width: '100%',
-    height: 150,
-    marginTop: 10,
-    borderRadius: 4,
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  legendContainer: {
+    padding: 10,
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderColor: '#ccc',
+  },
+  legendTitle: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  legendRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 5,
+  },
+  colorBox: {
+    width: 15,
+    height: 15,
+    marginRight: 5,
+    borderRadius: 3,
+  },
+  legendText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 6,
+  },
+  sortButton: {
+    flex: 1, // Make both buttons take equal space
+    paddingVertical: 5,
+    borderRadius: 5,
+    backgroundColor: 'lightgrey', // Light gray background for inactive button
+    marginHorizontal: 5,
+    alignItems: 'center', // Center text within the button
+  },
+  activeButton: {
+    backgroundColor: '#007AFF', // Blue background for active button
+  },
+  buttonText: {
+    color: '#8E8E93', // Light gray text for inactive button
+    fontSize: 15,
+    fontWeight: 'bold',
+  },
+  activeButtonText: {
+    color: 'white', // White text for active button
   },
 });
