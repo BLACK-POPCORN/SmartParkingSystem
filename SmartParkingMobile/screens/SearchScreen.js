@@ -102,7 +102,7 @@ const SearchScreen = ({ navigation }) => {
 
   const handlePlacePress = (restaurant) => {
     setSelectedPlace(restaurant);
-    navigation.navigate('Parking', { destination: restaurant.geometry.location });
+    navigation.navigate('Parking', { destination: restaurant.geometry.location, currentLocation:region });
   };
 
   const handleLayout = (index, event) => {

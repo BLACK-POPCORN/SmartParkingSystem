@@ -3,12 +3,14 @@ import { StyleSheet, Text, TextInput, View, FlatList, Image, Dimensions, Touchab
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { googlePlacesApiKey } from '@env';
+import {xApiKey} from '@env';
 import MapView, { Marker } from 'react-native-maps';
 
 
 const ParkingScreen = ({ route }) => {
   const navigation = useNavigation();
   const { destination } = route.params;
+  console.log(route.params);
   const [parkings, setParkings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [locationLoading, setLocationLoading] = useState(true);
@@ -34,6 +36,74 @@ const ParkingScreen = ({ route }) => {
   };
 
   useEffect(() => {
+
+    const fetchPrediction = async (modelName) => {
+      try {
+        const response = await fetch('https://fb63u8anv3.execute-api.us-west-1.amazonaws.com/prod/predict', {
+          method: 'POST',
+          headers: {
+            'x-api-key': xApiKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model_name: modelName
+          })
+        });
+  
+        const data = await response.json();
+  
+        // 更新预测结果
+        if (data.predictions && data.predictions.length > 0) {
+          console.log("prediction is nihao", data.predictions[0][0])
+          return data.predictions[0][0];
+          setPrediction(data.predictions[0][0]);
+        } else {
+          return "No predictions found";
+          setPrediction("No predictions found");
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        setPrediction("Error fetching prediction");
+      }}
+
+    const getDriveTime = async (location) => {
+        if (!route.params.destination) {
+          Alert.alert("Wrong location");
+          return;
+        }
+        // {"lat": 1.3816929, "lng": 103.8450516}
+
+        const options = {
+          method: 'GET',
+          url: 'https://maps.googleapis.com/maps/api/distancematrix/json',
+          params: {
+            origins: `${route.params.currentLocation.latitude},${route.params.currentLocation.longitude}`,
+            // destinations: `1.3816929,103.8450516`,
+
+            // destinations: `${location.lat},${location.lng}`,
+            destinations: `${region.latitude},${region.longitude}`,
+            mode: 'driving', // 指定为驾车模式
+            key: googlePlacesApiKey,
+          },
+        };
+
+        try {
+          const response = await axios.request(options);
+          const result = response.data.rows[0].elements[0];
+          if (result.status === 'OK') {
+            console.log("driving time",result.duration.value)
+            return result.duration.value // second
+            // setDriveTime(result.duration.text); // 设置驾车时间
+          } else {
+            return "cannot get the driving time"
+            Alert.alert("cannot get the driving time");
+          }
+        } catch (error) {
+          console.error(error);
+          Alert.alert("cannot connect to Google Maps API");
+        }
+      };
+
     const fetchParkingLots = async () => {
       setLocationLoading(true);
 
@@ -59,19 +129,29 @@ const ParkingScreen = ({ route }) => {
         parkingArray = response.data.results
         const dataAPI = await responseAPI.json();
 
-        const updatedData = parkingArray.map((item1) => {
-          // 查找data2中匹配的carpark_number
+        const updatedData = await Promise.all(parkingArray.map(async (item1) => {
           const matchingCarpark = dataAPI.items[0].carpark_data.find(
             (item2) => item2.carpark_number === item1.name
           );
 
+        // const updatedData = parkingArray.map((item1) => {
+        //   // 查找data2中匹配的carpark_number
+        //   const matchingCarpark = dataAPI.items[0].carpark_data.find(
+        //     (item2) => item2.carpark_number === item1.name
+        //   );
+
           // 如果找到了匹配的carpark_number，则合并carpark_info和update_datetime
           if (matchingCarpark) {
+            const predictionFromAPI = await fetchPrediction(item1.name);
+            const drivingTimeFromGoogle = await getDriveTime(item1.geometry.location);
+
             return {
               ...item1,
               carpark_info_total_lots: matchingCarpark.carpark_info[0].total_lots,
               carpark_info_available_lots: matchingCarpark.carpark_info[0].lots_available,
+              prediction: predictionFromAPI,
               update_datetime: matchingCarpark.update_datetime,
+              drivingTime:drivingTimeFromGoogle,
             };
           }
 
@@ -79,7 +159,7 @@ const ParkingScreen = ({ route }) => {
             ...item1,
           };
 
-        });
+        }));
 
         const filteredData = updatedData.filter(item => item.update_datetime);
         setParkings(sortParkings(filteredData)) // Set sorted parking data
@@ -176,6 +256,9 @@ const ParkingScreen = ({ route }) => {
         <Text> - Address: {item.vicinity.replace(/, Singapore/g, "")}</Text>
       </View>
       <Text>Real-time Available Lots: {item.carpark_info_available_lots}/{item.carpark_info_total_lots}</Text>
+      <Text>prediction Lots: {Math.floor(item.prediction)}</Text>
+      <Text>driving time: {(item.drivingTime / 60).toFixed(1)} mins</Text>
+
     </View>
   );
 
