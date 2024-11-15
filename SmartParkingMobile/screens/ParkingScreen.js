@@ -186,8 +186,12 @@ const ParkingScreen = ({ route }) => {
           'https://api.data.gov.sg/v1/transport/carpark-availability'
         );
 
-        parkingArray = response.data.results
+        parkingArrayBeforeFiltered = response.data.results
+        console.log("parkingArray is ",parkingArray)
         const dataAPI = await responseAPI.json();
+
+        const parkingArray = parkingArrayBeforeFiltered.filter(item => parkingList.includes(item.name));
+
 
         const updatedData = await Promise.all(parkingArray.map(async (item1) => {
           const matchingCarpark = dataAPI.items[0].carpark_data.find(
