@@ -81,7 +81,7 @@ const ParkingScreen = ({ route }) => {
             // destinations: `1.3816929,103.8450516`,
 
             // destinations: `${location.lat},${location.lng}`,
-            destinations: `${region.latitude},${region.longitude}`,
+            destinations: `${location.latitude},${location.longitude}`,
             mode: 'driving', // 指定为驾车模式
             key: googlePlacesApiKey,
           },
