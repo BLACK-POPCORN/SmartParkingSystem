@@ -8,6 +8,27 @@ import MapView, { Marker } from 'react-native-maps';
 
 
 const ParkingScreen = ({ route }) => {
+  const [currentTime, setCurrentTime] = useState('');
+  const [minutesToNextQuarter, setMinutesToNextQuarter] = useState(0);
+
+
+  useEffect(() => {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString(); // 获取当前时间字符串
+
+    const minuteString = now.getMinutes().toString().padStart(2, '0'); // 获取当前分钟数并转换为两位字符串
+
+
+    const currentMinute = now.getMinutes();
+    const nextQuarterMinute = Math.ceil(currentMinute / 15) * 15; // 下一个 15 分钟的倍数
+    const minutesRemaining = nextQuarterMinute - currentMinute;
+
+    setMinutesToNextQuarter(minutesRemaining);
+
+    setCurrentTime(currentMinute);
+  }, []); // 空依赖数组，确保只在组件加载时执行一次
+
+
   const navigation = useNavigation();
   const { destination } = route.params;
   console.log(route.params);
@@ -37,33 +58,63 @@ const ParkingScreen = ({ route }) => {
 
   useEffect(() => {
 
-    const fetchPrediction = async (modelName) => {
+    const fetchPrediction = async (modelName,drivingTime) => {
       try {
-        const response = await fetch('https://fb63u8anv3.execute-api.us-west-1.amazonaws.com/prod/predict', {
-          method: 'POST',
-          headers: {
-            'x-api-key': xApiKey,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model_name: modelName
-          })
-        });
+        // const response = await fetch('https://fb63u8anv3.execute-api.us-west-1.amazonaws.com/prod/predict', {
+        //   method: 'POST',
+        //   headers: {
+        //     'x-api-key': xApiKey,
+        //     'Content-Type': 'application/json'
+        //   },
+        //   body: JSON.stringify({
+        //     model_name: modelName
+        //   })
+        // });
   
-        const data = await response.json();
-  
+        // const data = await response.json();
+
+        function calculateX(A) {
+          const quotient = Math.floor(A / 15); // 计算 A / 15 的商
+          const remainder = A % 15; // 计算 A / 15 的余数
+        
+          // 判断余数和 7.5 的大小
+          const extra = remainder <= 7.5 ? 0 : 1;
+        
+          // 计算 X
+          const X = quotient + extra;
+          if (X > 120) {
+            X = 8;
+          }
+          return X;
+        }
+        console.log("prediction, driveing time is ",drivingTime)
+        const returnDataPoint = calculateX(minutesToNextQuarter+drivingTime/60);
+        // code for  test
+        const dataForTest = { predictions: [[0], [15], [30], [45],[60],[75],[90],[105],[120]] };
+
+        if (dataForTest.predictions && dataForTest.predictions.length > 0) {
+
         // 更新预测结果
-        if (data.predictions && data.predictions.length > 0) {
-          console.log("prediction is nihao", data.predictions[0][0])
-          return data.predictions[0][0];
-          setPrediction(data.predictions[0][0]);
+        // if (data.predictions && data.predictions.length > 0) {
+
+         
+          // console.log("prediction is nihao", data.predictions[0][0])
+          // console.log("prediction is nihao", data.predictions[0][0]) // for prediction
+
+
+          console.log("[0]is",dataForTest.predictions)
+          console.log("returnDataPoint should be",returnDataPoint)
+          return dataForTest.predictions[returnDataPoint][0]
+          // real code
+          // return data.predictions[0][0]; 
+          // setPrediction(data.predictions[0][0]);
         } else {
           return "No predictions found";
-          setPrediction("No predictions found");
+          // setPrediction("No predictions found");
         }
       } catch (error) {
         console.error('Error:', error);
-        setPrediction("Error fetching prediction");
+        // setPrediction("Error fetching prediction");
       }}
 
     const getDriveTime = async (location) => {
@@ -81,18 +132,24 @@ const ParkingScreen = ({ route }) => {
             // destinations: `1.3816929,103.8450516`,
 
             // destinations: `${location.lat},${location.lng}`,
-            destinations: `${location.latitude},${location.longitude}`,
+            destinations: `${location.lat},${location.lng}`,
             mode: 'driving', // 指定为驾车模式
             key: googlePlacesApiKey,
           },
         };
 
         try {
-          const response = await axios.request(options);
-          const result = response.data.rows[0].elements[0];
-          if (result.status === 'OK') {
-            console.log("driving time",result.duration.value)
-            return result.duration.value // second
+          // this is real code
+          // const response = await axios.request(options);
+          // const result = response.data.rows[0].elements[0];
+          // if (result.status === 'OK') {
+          //   console.log("driving time",result.duration.value)
+          //   return result.duration.value // second
+
+          if (1) {
+            // console.log("driving time",result.duration.value)
+            return 1200 // second
+          
             // setDriveTime(result.duration.text); // 设置驾车时间
           } else {
             return "cannot get the driving time"
@@ -142,8 +199,8 @@ const ParkingScreen = ({ route }) => {
 
           // 如果找到了匹配的carpark_number，则合并carpark_info和update_datetime
           if (matchingCarpark) {
-            const predictionFromAPI = await fetchPrediction(item1.name);
             const drivingTimeFromGoogle = await getDriveTime(item1.geometry.location);
+            const predictionFromAPI = await fetchPrediction(item1.name, drivingTimeFromGoogle);
 
             return {
               ...item1,
@@ -250,14 +307,23 @@ const ParkingScreen = ({ route }) => {
       style={styles.parkingContainer}
       onLayout={(event) => handleLayout(index, event)}
     >
+    <Text >time is: {currentTime}</Text>
+    <Text style={styles.timeText}>距离下一个 1/4 小时还有: {minutesToNextQuarter} 分钟</Text>
+
 
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Text style={styles.parkingName}>{item.name}</Text>
         <Text> - Address: {item.vicinity.replace(/, Singapore/g, "")}</Text>
       </View>
-      <Text>Real-time Available Lots: {item.carpark_info_available_lots}/{item.carpark_info_total_lots}</Text>
       <Text>prediction Lots: {Math.floor(item.prediction)}</Text>
       <Text>driving time: {(item.drivingTime / 60).toFixed(1)} mins</Text>
+
+      {item.drivingTime < 300 ? (
+      <Text>SHOW Real-time Available Lots: {item.carpark_info_available_lots}/{item.carpark_info_total_lots}</Text>
+    ) : (
+      <Text>SHOW THIS ONEprediction Lots: {Math.floor(item.prediction)}/{item.carpark_info_total_lots}</Text>
+
+)}
 
     </View>
   );
@@ -348,8 +414,17 @@ const ParkingScreen = ({ route }) => {
               longitude: parking.geometry.location.lng,
             }}
             title={parking.name}
-            description={`Available: ${parking.carpark_info_available_lots}/${parking.carpark_info_total_lots}`}
-            pinColor={getMarkerColor(parking.carpark_info_available_lots)}
+            description={parking.drivingTime < 300 ?
+              `Available: ${parking.carpark_info_available_lots}/${parking.carpark_info_total_lots}`:
+            `Available: ${parking.prediction}/${parking.carpark_info_total_lots}`}
+            
+            pinColor={
+              parking.drivingTime < 300
+        ? getMarkerColor(parking.carpark_info_available_lots)
+        : getMarkerColor(Math.floor(parking.prediction))
+              
+              }
+            
             onPress={() => setSelectedParking(parking)}
           />
         ))}
