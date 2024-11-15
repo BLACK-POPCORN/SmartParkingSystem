@@ -5,11 +5,14 @@ import axios from 'axios';
 import { googlePlacesApiKey } from '@env';
 import {xApiKey} from '@env';
 import MapView, { Marker } from 'react-native-maps';
+import allParkinglots from './parking_lots_names.js';
 
 
 const ParkingScreen = ({ route }) => {
   const [currentTime, setCurrentTime] = useState('');
   const [minutesToNextQuarter, setMinutesToNextQuarter] = useState(0);
+  const parkingList=allParkinglots;
+  // console.log("all parkinglist should be ", parkingList)
 
 
   useEffect(() => {
