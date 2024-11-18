@@ -18,14 +18,14 @@ const ParkingScreen = ({ route }) => {
   const [region, setRegion] = useState({
     latitude: destination.lat,
     longitude: destination.lng,
-    latitudeDelta: 0.005,
-    longitudeDelta: 0.005,
+    latitudeDelta: 0.00175,
+    longitudeDelta: 0.00345,
   });
   const [selectedParking, setSelectedParking] = useState(null);
   const [itemHeights, setItemHeights] = useState({});
   const [sortOption, setSortOption] = useState('distance'); // Default sort by distance
   const flatListRef = useRef(null);
-
+  
   // Sorting function based on selected option
   const sortParkings = (data) => {
     const sortedData = [...data]; // Create a shallow copy to avoid modifying the original
@@ -360,6 +360,7 @@ const ParkingScreen = ({ route }) => {
             description={`Available: ${parking.carpark_info_available_lots}/${parking.carpark_info_total_lots}`}
             pinColor={getMarkerColor(parking.carpark_info_available_lots)}
             onPress={() => setSelectedParking(parking)}
+            tracksViewChanges={true}
           />
         ))}
       </MapView>
