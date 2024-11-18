@@ -11,14 +11,15 @@ const ParkingScreen = ({ route }) => {
   const navigation = useNavigation();
   const { destination } = route.params;
   console.log(route.params);
+  const [originalParkings, setOriginalParkings] = useState([]); // Store original fetched data
   const [parkings, setParkings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [locationLoading, setLocationLoading] = useState(true);
   const [region, setRegion] = useState({
     latitude: destination.lat,
     longitude: destination.lng,
-    latitudeDelta: 0.006,
-    longitudeDelta: 0.008,
+    latitudeDelta: 0.005,
+    longitudeDelta: 0.005,
   });
   const [selectedParking, setSelectedParking] = useState(null);
   const [itemHeights, setItemHeights] = useState({});
@@ -26,14 +27,15 @@ const ParkingScreen = ({ route }) => {
   const flatListRef = useRef(null);
 
   // Sorting function based on selected option
-  const sortParkings = (parkings) => {
+  const sortParkings = (data) => {
+    const sortedData = [...data]; // Create a shallow copy to avoid modifying the original
     if (sortOption === 'distance') {
-      return parkings; // Already sorted by distance in search results
+      return sortedData; // Already sorted by distance in search results
     } else if (sortOption === 'availableLots') {
-      return parkings.sort((a, b) => b.carpark_info_available_lots - a.carpark_info_available_lots);
+      return sortedData.sort((a, b) => b.carpark_info_available_lots - a.carpark_info_available_lots);
     }
-    return parkings;
-  };
+    return sortedData;
+  };  
 
   useEffect(() => {
 
@@ -162,7 +164,8 @@ const ParkingScreen = ({ route }) => {
         }));
 
         const filteredData = updatedData.filter(item => item.update_datetime);
-        setParkings(sortParkings(filteredData)) // Set sorted parking data
+        setParkings(filteredData);
+        setOriginalParkings(sortParkings(filteredData)); // Initially sort and set
         setLocationLoading(false);
       } catch (error) {
         console.error('Error fetching parking lots:', error);
@@ -172,7 +175,13 @@ const ParkingScreen = ({ route }) => {
     };
 
     fetchParkingLots(); // Fetch parking lots when the component loads
-  }, [destination, sortOption]); // Reload data when sort option changes
+  }, [destination]); 
+
+  useEffect(() => {
+    if (originalParkings.length > 0) {
+      setParkings(sortParkings(originalParkings)); // Sort locally when sort option changes
+    }
+  }, [sortOption]);
 
   useEffect(() => {
     if (selectedParking && parkings.length > 0 && flatListRef.current) {
