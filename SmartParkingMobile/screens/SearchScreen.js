@@ -20,6 +20,9 @@ const SearchScreen = ({ navigation }) => {
   const singaporeLocation = {
     lat: 1.3521,  // Latitude for Singapore
     lng: 103.8198 // Longitude for Singapore
+    //  YIO CHU KANG STADIUM
+    // lat: 1.3831952,  // Latitude for Singapore
+    // lng: 103.8447647 // Longitude for Singapore
   };
   const [region, setRegion] = useState({
     latitude: singaporeLocation.lat,

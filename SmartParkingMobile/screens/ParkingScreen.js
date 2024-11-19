@@ -7,7 +7,6 @@ import {xApiKey} from '@env';
 import MapView, { Marker } from 'react-native-maps';
 import allParkinglots from './parking_lots_names.js';
 
-
 const ParkingScreen = ({ route }) => {
   const [currentTime, setCurrentTime] = useState('');
   const [minutesToNextQuarter, setMinutesToNextQuarter] = useState(0);
@@ -336,13 +335,13 @@ const ParkingScreen = ({ route }) => {
         <Text style={styles.parkingName}>{item.name}</Text>
         <Text> - Address: {item.vicinity.replace(/, Singapore/g, "")}</Text>
       </View>
-      <Text>prediction Lots: {Math.floor(item.prediction)}</Text>
-      <Text>driving time: {(item.drivingTime / 60).toFixed(1)} mins</Text>
+      {/* <Text>prediction Lots: {Math.floor(item.prediction)}</Text> */}
+      <Text>Driving time: {(item.drivingTime / 60).toFixed(1)} mins</Text>
 
       {item.drivingTime < 300 ? (
-      <Text>SHOW Real-time Available Lots: {item.carpark_info_available_lots}/{item.carpark_info_total_lots}</Text>
+      <Text>Real-time Available Parking Lots: {item.carpark_info_available_lots}/{item.carpark_info_total_lots}</Text>
     ) : (
-      <Text>SHOW THIS ONEprediction Lots: {Math.floor(item.prediction)}/{item.carpark_info_total_lots}</Text>
+      <Text>Pridictive Parking Lots: {Math.floor(item.prediction)}/{item.carpark_info_total_lots}</Text>
 
 )}
 
