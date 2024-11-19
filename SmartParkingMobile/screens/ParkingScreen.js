@@ -65,18 +65,19 @@ const ParkingScreen = ({ route }) => {
 
     const fetchPrediction = async (modelName,drivingTime) => {
       try {
-        // const response = await fetch('https://fb63u8anv3.execute-api.us-west-1.amazonaws.com/prod/predict', {
-        //   method: 'POST',
-        //   headers: {
-        //     'x-api-key': xApiKey,
-        //     'Content-Type': 'application/json'
-        //   },
-        //   body: JSON.stringify({
-        //     model_name: modelName
-        //   })
-        // });
+        const response = await fetch('https://fb63u8anv3.execute-api.us-west-1.amazonaws.com/prod/predict', {
+          method: 'POST',
+          headers: {
+            'x-api-key': xApiKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model_name: modelName
+          })
+        });
   
-        // const data = await response.json();
+        const data = await response.json();
+        console.log("data is", data)
 
         function calculateX(A) {
           const quotient = Math.floor(A / 15); // 计算 A / 15 的商
@@ -95,23 +96,26 @@ const ParkingScreen = ({ route }) => {
         console.log("prediction, driveing time is ",drivingTime)
         const returnDataPoint = calculateX(minutesToNextQuarter+drivingTime/60);
         // code for  test
-        const dataForTest = { predictions: [[0], [15], [30], [45],[60],[75],[90],[105],[120]] };
+        // const dataForTest = { predictions: [[0], [15], [30], [45],[60],[75],[90],[105],[120]] };
 
-        if (dataForTest.predictions && dataForTest.predictions.length > 0) {
+        // if (dataForTest.predictions && dataForTest.predictions.length > 0) {
 
         // 更新预测结果
-        // if (data.predictions && data.predictions.length > 0) {
+        if (data.predictions && data.predictions.length > 0) {
 
          
           // console.log("prediction is nihao", data.predictions[0][0])
           // console.log("prediction is nihao", data.predictions[0][0]) // for prediction
 
 
-          console.log("[0]is",dataForTest.predictions)
-          console.log("returnDataPoint should be",returnDataPoint)
-          return dataForTest.predictions[returnDataPoint][0]
+          // console.log("[0]is",dataForTest.predictions)
+          // console.log("returnDataPoint should be",returnDataPoint)
+          // return dataForTest.predictions[returnDataPoint][0]
           // real code
-          // return data.predictions[0][0]; 
+          // return data.predictions[returnDataPoint][0]; 
+          console.log("model Name",modelName,'prediction parking lot', data.predictions)
+          return data.predictions[0][returnDataPoint]; 
+
           // setPrediction(data.predictions[0][0]);
         } else {
           return "No predictions found";
@@ -145,15 +149,15 @@ const ParkingScreen = ({ route }) => {
 
         try {
           // this is real code
-          // const response = await axios.request(options);
-          // const result = response.data.rows[0].elements[0];
-          // if (result.status === 'OK') {
-          //   console.log("driving time",result.duration.value)
-          //   return result.duration.value // second
+          const response = await axios.request(options);
+          const result = response.data.rows[0].elements[0];
+          if (result.status === 'OK') {
+            console.log("driving time",result.duration.value)
+            return result.duration.value // second
 
-          if (1) {
-            // console.log("driving time",result.duration.value)
-            return 1200 // second
+          // if (1) {
+          //   // console.log("driving time",result.duration.value)
+          //   return 1200 // second
           
             // setDriveTime(result.duration.text); // 设置驾车时间
           } else {
@@ -208,6 +212,7 @@ const ParkingScreen = ({ route }) => {
 
           // 如果找到了匹配的carpark_number，则合并carpark_info和update_datetime
           if (matchingCarpark) {
+            console.log("item1.name= ",item1.name)
             const drivingTimeFromGoogle = await getDriveTime(item1.geometry.location);
             const predictionFromAPI = await fetchPrediction(item1.name, drivingTimeFromGoogle);
 
@@ -323,8 +328,8 @@ const ParkingScreen = ({ route }) => {
       style={styles.parkingContainer}
       onLayout={(event) => handleLayout(index, event)}
     >
-    <Text >time is: {currentTime}</Text>
-    <Text style={styles.timeText}>距离下一个 1/4 小时还有: {minutesToNextQuarter} 分钟</Text>
+    {/* <Text >time is: {currentTime}</Text>
+    <Text style={styles.timeText}>距离下一个 1/4 小时还有: {minutesToNextQuarter} 分钟</Text> */}
 
 
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
