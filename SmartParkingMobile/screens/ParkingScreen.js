@@ -436,7 +436,7 @@ const ParkingScreen = ({ route }) => {
             title={parking.name}
             description={parking.drivingTime < 300 ?
               `Available: ${parking.carpark_info_available_lots}/${parking.carpark_info_total_lots}`:
-            `Available: ${parking.prediction}/${parking.carpark_info_total_lots}`}
+            `Available: ${Math.floor(parking.prediction)}/${parking.carpark_info_total_lots}`}
             
             pinColor={
               parking.drivingTime < 300
