@@ -341,8 +341,8 @@ const ParkingScreen = ({ route }) => {
       {item.drivingTime < 300 ? (
       <Text>Real-time Available Parking Lots: {item.carpark_info_available_lots}/{item.carpark_info_total_lots}</Text>
     ) : (
-      <Text>Pridictive Parking Lots: {Math.floor(item.prediction)}/{item.carpark_info_total_lots}</Text>
-
+      <Text>Predictive Parking Lots: {Math.floor(item.prediction)}/{item.carpark_info_total_lots}</Text>
+      
 )}
 
     </View>
