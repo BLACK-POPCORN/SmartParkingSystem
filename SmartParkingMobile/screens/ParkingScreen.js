@@ -3,7 +3,7 @@ import { StyleSheet, Text, TextInput, View, FlatList, Image, Dimensions, Touchab
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { googlePlacesApiKey } from '@env';
-import {xApiKey} from '@env';
+import { xApiKey } from '@env';
 import MapView, { Marker } from 'react-native-maps';
 import allParkinglots from './parking_lots_names.js';
 import { Linking } from 'react-native';
@@ -11,7 +11,7 @@ import { Linking } from 'react-native';
 const ParkingScreen = ({ route }) => {
   const [currentTime, setCurrentTime] = useState('');
   const [minutesToNextQuarter, setMinutesToNextQuarter] = useState(0);
-  const parkingList=allParkinglots;
+  const parkingList = allParkinglots;
   // console.log("all parkinglist should be ", parkingList)
 
 
@@ -33,7 +33,7 @@ const ParkingScreen = ({ route }) => {
 
 
   const navigation = useNavigation();
-  const { destination,currentLocation } = route.params;
+  const { destination, currentLocation } = route.params;
   console.log(route.params);
   const [originalParkings, setOriginalParkings] = useState([]); // Store original fetched data
   const [parkings, setParkings] = useState([]);
@@ -49,7 +49,7 @@ const ParkingScreen = ({ route }) => {
   const [itemHeights, setItemHeights] = useState({});
   const [sortOption, setSortOption] = useState('distance'); // Default sort by distance
   const flatListRef = useRef(null);
-  
+
   // Sorting function based on selected option
   const sortParkings = (data) => {
     const sortedData = [...data]; // Create a shallow copy to avoid modifying the original
@@ -59,11 +59,11 @@ const ParkingScreen = ({ route }) => {
       return sortedData.sort((a, b) => b.carpark_info_available_lots - a.carpark_info_available_lots);
     }
     return sortedData;
-  };  
+  };
 
   useEffect(() => {
 
-    const fetchPrediction = async (modelName,drivingTime) => {
+    const fetchPrediction = async (modelName, drivingTime) => {
       try {
         const response = await fetch('https://fb63u8anv3.execute-api.us-west-1.amazonaws.com/prod/predict', {
           method: 'POST',
@@ -75,17 +75,17 @@ const ParkingScreen = ({ route }) => {
             model_name: modelName
           })
         });
-  
+
         const data = await response.json();
         console.log("data is", data)
 
         function calculateX(A) {
           const quotient = Math.floor(A / 15); // 计算 A / 15 的商
           const remainder = A % 15; // 计算 A / 15 的余数
-        
+
           // 判断余数和 7.5 的大小
           const extra = remainder <= 7.5 ? 0 : 1;
-        
+
           // 计算 X
           const X = quotient + extra;
           if (X > 120) {
@@ -93,8 +93,8 @@ const ParkingScreen = ({ route }) => {
           }
           return X;
         }
-        console.log("prediction, driveing time is ",drivingTime)
-        const returnDataPoint = calculateX(minutesToNextQuarter+drivingTime/60);
+        console.log("prediction, driveing time is ", drivingTime)
+        const returnDataPoint = calculateX(minutesToNextQuarter + drivingTime / 60);
         // code for  test
         // const dataForTest = { predictions: [[0], [15], [30], [45],[60],[75],[90],[105],[120]] };
 
@@ -103,7 +103,7 @@ const ParkingScreen = ({ route }) => {
         // 更新预测结果
         if (data.predictions && data.predictions.length > 0) {
 
-         
+
           // console.log("prediction is nihao", data.predictions[0][0])
           // console.log("prediction is nihao", data.predictions[0][0]) // for prediction
 
@@ -113,8 +113,8 @@ const ParkingScreen = ({ route }) => {
           // return dataForTest.predictions[returnDataPoint][0]
           // real code
           // return data.predictions[returnDataPoint][0]; 
-          console.log("model Name",modelName,'prediction parking lot', data.predictions)
-          return data.predictions[0][returnDataPoint]; 
+          console.log("model Name", modelName, 'prediction parking lot', data.predictions)
+          return data.predictions[0][returnDataPoint];
 
           // setPrediction(data.predictions[0][0]);
         } else {
@@ -124,158 +124,181 @@ const ParkingScreen = ({ route }) => {
       } catch (error) {
         console.error('Error:', error);
         // setPrediction("Error fetching prediction");
-      }}
+      }
+    }
 
     const getDriveTime = async (location) => {
-        if (!route.params.destination) {
-          Alert.alert("Wrong location");
-          return;
-        }
-        // {"lat": 1.3816929, "lng": 103.8450516}
+      if (!route.params.destination) {
+        Alert.alert("Wrong location");
+        return;
+      }
+      // {"lat": 1.3816929, "lng": 103.8450516}
 
-        const options = {
-          method: 'GET',
-          url: 'https://maps.googleapis.com/maps/api/distancematrix/json',
-          params: {
-            origins: `${route.params.currentLocation.latitude},${route.params.currentLocation.longitude}`,
-            // destinations: `1.3816929,103.8450516`,
+      const options = {
+        method: 'GET',
+        url: 'https://maps.googleapis.com/maps/api/distancematrix/json',
+        params: {
+          origins: `${route.params.currentLocation.latitude},${route.params.currentLocation.longitude}`,
+          // destinations: `1.3816929,103.8450516`,
 
-            // destinations: `${location.lat},${location.lng}`,
-            destinations: `${location.lat},${location.lng}`,
-            mode: 'driving', // 指定为驾车模式
-            key: googlePlacesApiKey,
-          },
-        };
+          // destinations: `${location.lat},${location.lng}`,
+          destinations: `${location.lat},${location.lng}`,
+          mode: 'driving', // 指定为驾车模式
+          key: googlePlacesApiKey,
+        },
+      };
 
-        try {
-          // this is real code
-          const response = await axios.request(options);
-          const result = response.data.rows[0].elements[0];
-          if (result.status === 'OK') {
-            console.log("driving time",result.duration.value)
-            return result.duration.value // second
+      try {
+        // this is real code
+        const response = await axios.request(options);
+        const result = response.data.rows[0].elements[0];
+        if (result.status === 'OK') {
+          console.log("driving time", result.duration.value)
+          return result.duration.value // second
 
           // if (1) {
           //   // console.log("driving time",result.duration.value)
           //   return 1200 // second
-          
-            // setDriveTime(result.duration.text); // 设置驾车时间
-          } else {
-            return "cannot get the driving time"
-            Alert.alert("cannot get the driving time");
-          }
-        } catch (error) {
-          console.error(error);
-          Alert.alert("cannot connect to Google Maps API");
+
+          // setDriveTime(result.duration.text); // 设置驾车时间
+        } else {
+          return "cannot get the driving time"
+          Alert.alert("cannot get the driving time");
         }
-      };
+      } catch (error) {
+        console.error(error);
+        Alert.alert("cannot connect to Google Maps API");
+      }
+    };
 
-      const getDistanceToParking = async (destination, parkingLocation) => {
-        const options = {
-          method: 'GET',
-          url: 'https://maps.googleapis.com/maps/api/distancematrix/json',
-          params: {
-            origins: `${destination.lat},${destination.lng}`,
-            destinations: `${parkingLocation.lat},${parkingLocation.lng}`,
-            key: googlePlacesApiKey,
-            mode: 'driving', // Adjust mode as needed
-          },
-        };
-      
-        try {
-          const response = await axios.request(options);
-          const result = response.data.rows[0].elements[0];
-          if (result.status === 'OK') {
-            console.log(`Distance to parking: ${result.distance.text}`);
-            return result.distance.text; // Human-readable distance (e.g., "5.3 km")
-          } else {
-            console.error('Error fetching distance:', result.status);
-            return null;
-          }
-        } catch (error) {
-          console.error('Error connecting to Google Distance Matrix API:', error);
-          return null;
-        }
-      };
-      
-
-    const fetchParkingLots = async () => {
-      setLocationLoading(true);
-
+    const getDistanceToParking = async (destination, parkingLocation) => {
       const options = {
         method: 'GET',
-        url: `https://maps.googleapis.com/maps/api/place/nearbysearch/json`,
+        url: 'https://maps.googleapis.com/maps/api/distancematrix/json',
         params: {
-          location: `${destination.lat},${destination.lng}`, // Use location passed from route.params
-          radius: 1000, // 1 km radius
-          type: 'parking', // Restrict the search to parking lots
+          origins: `${destination.lat},${destination.lng}`,
+          destinations: `${parkingLocation.lat},${parkingLocation.lng}`,
           key: googlePlacesApiKey,
-          language: 'en',
+          mode: 'driving', // Adjust mode as needed
         },
       };
 
       try {
         const response = await axios.request(options);
-
-        const responseAPI = await fetch(
-          'https://api.data.gov.sg/v1/transport/carpark-availability'
-        );
-
-        parkingArrayBeforeFiltered = response.data.results
-        console.log("parkingArray is ",parkingArray)
-        const dataAPI = await responseAPI.json();
-
-        const parkingArray = parkingArrayBeforeFiltered.filter(item => parkingList.includes(item.name));
-
-
-        const updatedData = await Promise.all(parkingArray.map(async (item1) => {
-          const matchingCarpark = dataAPI.items[0].carpark_data.find(
-            (item2) => item2.carpark_number === item1.name
-          );
-
-        // const updatedData = parkingArray.map((item1) => {
-        //   // 查找data2中匹配的carpark_number
-        //   const matchingCarpark = dataAPI.items[0].carpark_data.find(
-        //     (item2) => item2.carpark_number === item1.name
-        //   );
-
-          // 如果找到了匹配的carpark_number，则合并carpark_info和update_datetime
-          if (matchingCarpark) {
-            console.log("item1.name= ",item1.name)
-            const distanceToParking = await getDistanceToParking(destination, item1.geometry.location);
-            const drivingTimeFromGoogle = await getDriveTime(item1.geometry.location);
-            const predictionFromAPI = await fetchPrediction(item1.name, drivingTimeFromGoogle);
-
-            return {
-              ...item1,
-              carpark_info_total_lots: matchingCarpark.carpark_info[0].total_lots,
-              carpark_info_available_lots: matchingCarpark.carpark_info[0].lots_available,
-              prediction: predictionFromAPI,
-              update_datetime: matchingCarpark.update_datetime,
-              drivingTime:drivingTimeFromGoogle,
-              distanceToDestination: distanceToParking,
-            };
-          }
-
-          return {
-            ...item1,
-          };
-
-        }));
-
-        const filteredData = updatedData.filter(item => item.update_datetime);
-        setParkings(filteredData);
-        setOriginalParkings(sortParkings(filteredData)); // Initially sort and set
-        setLocationLoading(false);
+        const result = response.data.rows[0].elements[0];
+        if (result.status === 'OK') {
+          console.log(`Distance to parking: ${result.distance.text}`);
+          return result.distance.text; // Human-readable distance (e.g., "5.3 km")
+        } else {
+          console.error('Error fetching distance:', result.status);
+          return null;
+        }
       } catch (error) {
-        console.error('Error fetching parking lots:', error);
-      } finally {
-        setLoading(false);
+        console.error('Error connecting to Google Distance Matrix API:', error);
+        return null;
       }
     };
 
-    fetchParkingLots(); // Fetch parking lots when the component loads
-  }, [destination]); 
+
+    const fetchParkingLots = async () => {
+      setLocationLoading(true);
+      let radius = 1000; // Initial radius in meters
+
+      const fetchWithRadius = async (currentRadius) => {
+        console.log(`Fetching parking lots with radius: ${currentRadius} meters`);
+
+        const options = {
+          method: 'GET',
+          url: `https://maps.googleapis.com/maps/api/place/nearbysearch/json`,
+          params: {
+            location: `${destination.lat},${destination.lng}`, // Use location passed from route.params
+            radius: 1000, // 1 km radius
+            type: 'parking', // Restrict the search to parking lots
+            key: googlePlacesApiKey,
+            language: 'en',
+          },
+        };
+
+        try {
+          const response = await axios.request(options);
+
+          const responseAPI = await fetch(
+            'https://api.data.gov.sg/v1/transport/carpark-availability'
+          );
+
+          parkingArrayBeforeFiltered = response.data.results
+          console.log("parkingArray is ", parkingArray)
+          const dataAPI = await responseAPI.json();
+
+          const parkingArray = parkingArrayBeforeFiltered.filter(item => parkingList.includes(item.name));
+
+          if (parkingArray.length > 0) {
+            const updatedData = await Promise.all(parkingArray.map(async (item1) => {
+              const matchingCarpark = dataAPI.items[0].carpark_data.find(
+                (item2) => item2.carpark_number === item1.name
+              );
+
+              // const updatedData = parkingArray.map((item1) => {
+              //   // 查找data2中匹配的carpark_number
+              //   const matchingCarpark = dataAPI.items[0].carpark_data.find(
+              //     (item2) => item2.carpark_number === item1.name
+              //   );
+
+              // 如果找到了匹配的carpark_number，则合并carpark_info和update_datetime
+              if (matchingCarpark) {
+                console.log("item1.name= ", item1.name)
+                const distanceToParking = await getDistanceToParking(destination, item1.geometry.location);
+                const drivingTimeFromGoogle = await getDriveTime(item1.geometry.location);
+                const predictionFromAPI = await fetchPrediction(item1.name, drivingTimeFromGoogle);
+
+                return {
+                  ...item1,
+                  carpark_info_total_lots: matchingCarpark.carpark_info[0].total_lots,
+                  carpark_info_available_lots: matchingCarpark.carpark_info[0].lots_available,
+                  prediction: predictionFromAPI,
+                  update_datetime: matchingCarpark.update_datetime,
+                  drivingTime: drivingTimeFromGoogle,
+                  distanceToDestination: distanceToParking,
+                };
+              }
+
+              return {
+                ...item1,
+              };
+
+            }));
+
+            const filteredData = updatedData.filter(item => item.update_datetime);
+            setParkings(filteredData);
+            setOriginalParkings(sortParkings(filteredData)); // Initially sort and set
+            return;
+          }
+          if (currentRadius >= 10000) {
+            console.warn("No parking lots found within 10 km radius.");
+            setParkings([]);
+            setOriginalParkings([]);
+            return; // Stop recursion
+          }
+
+          // Recursively call the function with an increased radius
+          await fetchWithRadius(currentRadius + 1000);
+
+        } catch (error) {
+          console.error('Error fetching parking lots:', error);
+          setParkings([]);
+            setOriginalParkings([]);
+        } finally {
+          setLoading(false);
+        }
+      };
+      await fetchWithRadius(radius); // Fetch parking lots when the component loads
+      setLocationLoading(false);
+    }
+    
+
+    
+    fetchParkingLots();
+  }, [destination]);
 
   useEffect(() => {
     if (originalParkings.length > 0) {
@@ -354,9 +377,9 @@ const ParkingScreen = ({ route }) => {
     <TouchableOpacity
       style={styles.parkingContainer}
       onLayout={(event) => handleLayout(index, event)}
-      onPress={() => openGoogleMaps(item.vicinity)} 
+      onPress={() => openGoogleMaps(item.vicinity)}
     >
-    {/* <Text >time is: {currentTime}</Text>
+      {/* <Text >time is: {currentTime}</Text>
     <Text style={styles.timeText}>距离下一个 1/4 小时还有: {minutesToNextQuarter} 分钟</Text> */}
 
 
@@ -368,20 +391,20 @@ const ParkingScreen = ({ route }) => {
       <Text>Driving from current location: {(item.drivingTime / 60).toFixed(1)} mins</Text>
       <Text>Distance to Destination: {item.distanceToDestination || "N/A"}</Text>
       {item.drivingTime < 300 ? (
-      <Text>Real-time Available Parking Lots: {item.carpark_info_available_lots}/{item.carpark_info_total_lots}</Text>
-    ) : (
-      <Text>Predictive Parking Lots: {Math.floor(item.prediction)}/{item.carpark_info_total_lots}</Text>
-      
-)}
+        <Text>Real-time Available Parking Lots: {item.carpark_info_available_lots}/{item.carpark_info_total_lots}</Text>
+      ) : (
+        <Text>Predictive Parking Lots: {Math.floor(item.prediction)}/{item.carpark_info_total_lots}</Text>
+
+      )}
 
     </TouchableOpacity>
   );
 
   const getMarkerColor = (availableLots) => {
     if (availableLots > 10) {
-      return "green"; 
+      return "green";
     } else if (availableLots > 5) {
-      return "yellow"; 
+      return "yellow";
     } else {
       return "red";
     }
@@ -414,8 +437,8 @@ const ParkingScreen = ({ route }) => {
     );
   };
 
-   // Render sort buttons
-   const renderSortButtons = () => (
+  // Render sort buttons
+  const renderSortButtons = () => (
     <View style={styles.buttonContainer}>
       <TouchableOpacity
         style={[styles.sortButton, sortOption === 'availableLots' && styles.activeButton]}
@@ -432,14 +455,14 @@ const ParkingScreen = ({ route }) => {
     </View>
   );
 
-  
+
   const openGoogleMaps = (destination) => {
     //const url = `https://www.google.com/maps/dir/?api=1&origin=${currentLocation.latitude},${currentLocation.longitude}&destination=${latitude},${longitude}&travelmode=driving`;
     const url = `https://www.google.com/maps/dir/?api=1&origin=${currentLocation.latitude},${currentLocation.longitude}&destination=${encodeURIComponent(destination)}&travelmode=driving`;
     Linking.openURL(url).catch(err => console.error('Failed to open Google Maps:', err));
   };
 
-  
+
 
   return (
     <View style={styles.container}>
@@ -462,16 +485,16 @@ const ParkingScreen = ({ route }) => {
             }}
             title={parking.name}
             description={parking.drivingTime < 300 ?
-              `Available: ${parking.carpark_info_available_lots}/${parking.carpark_info_total_lots}`:
-            `Available: ${Math.floor(parking.prediction)}/${parking.carpark_info_total_lots}`}
-            
+              `Available: ${parking.carpark_info_available_lots}/${parking.carpark_info_total_lots}` :
+              `Available: ${Math.floor(parking.prediction)}/${parking.carpark_info_total_lots}`}
+
             pinColor={
               parking.drivingTime < 300
-        ? getMarkerColor(parking.carpark_info_available_lots)
-        : getMarkerColor(Math.floor(parking.prediction))
-              
-              }
-            
+                ? getMarkerColor(parking.carpark_info_available_lots)
+                : getMarkerColor(Math.floor(parking.prediction))
+
+            }
+
             onPress={() => setSelectedParking(parking)}
             tracksViewChanges={true}
           />
@@ -482,8 +505,8 @@ const ParkingScreen = ({ route }) => {
       {loading ? (
         // <Text>Loading...</Text>
         <View style={styles.loadingContainer}>
-         <ActivityIndicator size="large" color="#0000ff" />
-         <Text>Fetching location...</Text>
+          <ActivityIndicator size="large" color="#0000ff" />
+          <Text>Fetching location...</Text>
         </View>
       ) : (
         <FlatList
