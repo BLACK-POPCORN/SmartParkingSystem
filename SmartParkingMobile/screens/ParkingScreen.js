@@ -54,7 +54,19 @@ const ParkingScreen = ({ route }) => {
   const sortParkings = (data) => {
     const sortedData = [...data]; // Create a shallow copy to avoid modifying the original
     if (sortOption === 'distance') {
-      return sortedData; // Already sorted by distance in search results
+      return sortedData.sort((a, b) => {
+        // Extract numeric value from distance string or default to Infinity if invalid
+        const getNumericDistance = (distance) => {
+            if (!distance) return Infinity; // Default to a large value for missing distances
+            const match = distance.match(/[\d.]+/); // Match the numeric part
+            return match ? parseFloat(match[0]) : Infinity; // Parse as float or use Infinity if no match
+        };
+
+        const distanceA = getNumericDistance(a.distanceToDestination);
+        const distanceB = getNumericDistance(b.distanceToDestination);
+
+        return distanceA - distanceB; // Sort in ascending order
+    });
     } else if (sortOption === 'availableLots') {
       return sortedData.sort((a, b) => b.carpark_info_available_lots - a.carpark_info_available_lots);
     }
@@ -269,8 +281,9 @@ const ParkingScreen = ({ route }) => {
             }));
 
             const filteredData = updatedData.filter(item => item.update_datetime);
-            setParkings(filteredData);
-            setOriginalParkings(sortParkings(filteredData)); // Initially sort and set
+            const sortedData=sortParkings(filteredData)
+            setParkings(sortedData);
+            setOriginalParkings(sortedData); // Initially sort and set
             return;
           }
           if (currentRadius >= 10000) {
