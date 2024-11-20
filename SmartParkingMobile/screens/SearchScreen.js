@@ -6,6 +6,8 @@ import { googlePlacesApiKey } from '@env';
 import PressableButton from '../components/PressableButton';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
+import haversine from "haversine-distance"; 
+
 
 const SearchScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -20,9 +22,6 @@ const SearchScreen = ({ navigation }) => {
   const singaporeLocation = {
     lat: 1.3521,  // Latitude for Singapore
     lng: 103.8198 // Longitude for Singapore
-    //  YIO CHU KANG STADIUM
-    // lat: 1.3831952,  // Latitude for Singapore
-    // lng: 103.8447647 // Longitude for Singapore
   };
   const [region, setRegion] = useState({
     latitude: singaporeLocation.lat,
@@ -45,8 +44,8 @@ const SearchScreen = ({ navigation }) => {
       setRegion({
         latitude: singaporeLocation.lat,
         longitude: singaporeLocation.lng,
-        latitudeDelta: 0.2,
-        longitudeDelta: 0.2,
+        latitudeDelta: 0.1,
+        longitudeDelta: 0.1,
       });
 
       setLocationLoading(false);
@@ -91,7 +90,34 @@ const SearchScreen = ({ navigation }) => {
 
     try {
       const response = await axios.request(options);
-      setPlaces(response.data.results);
+      const singaporeResults=response.data.results.filter((place) =>
+        place.formatted_address.includes("Singapore")
+    );
+
+      // setPlaces(singaporeResults);
+      // 获取用户当前位置
+    const userLocation = {
+      latitude: singaporeLocation.lat,
+      longitude: singaporeLocation.lng,
+    };
+
+    // 计算每个地点与用户位置的距离并排序
+    const resultsWithDistance = singaporeResults.map((place) => {
+      const placeLocation = {
+        latitude: place.geometry.location.lat,
+        longitude: place.geometry.location.lng,
+      };
+
+      const distance = haversine(userLocation, placeLocation); // 距离单位为米
+      return { ...place, distance };
+    });
+
+    // 按距离排序
+    const sortedResults = resultsWithDistance.sort((a, b) => a.distance - b.distance);
+
+    // 设置排序后的结果
+    setPlaces(sortedResults);
+    
     } catch (error) {
       console.error('Error fetching places:', error);
     } finally {
