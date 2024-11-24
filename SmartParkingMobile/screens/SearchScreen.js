@@ -95,27 +95,27 @@ const SearchScreen = ({ navigation }) => {
     );
 
       // setPlaces(singaporeResults);
-      // 获取用户当前位置
+      // Get the user's current location
     const userLocation = {
       latitude: singaporeLocation.lat,
       longitude: singaporeLocation.lng,
     };
 
-    // 计算每个地点与用户位置的距离并排序
+    // Calculate the distance between each location and the user's location and sort them
     const resultsWithDistance = singaporeResults.map((place) => {
       const placeLocation = {
         latitude: place.geometry.location.lat,
         longitude: place.geometry.location.lng,
       };
 
-      const distance = haversine(userLocation, placeLocation); // 距离单位为米
+      const distance = haversine(userLocation, placeLocation); // Distance in meters
       return { ...place, distance };
     });
 
-    // 按距离排序
+    // Sort by distance
     const sortedResults = resultsWithDistance.sort((a, b) => a.distance - b.distance);
 
-    // 设置排序后的结果
+    // Set the sorted results
     setPlaces(sortedResults);
     
     } catch (error) {

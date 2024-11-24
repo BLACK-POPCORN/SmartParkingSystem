@@ -1,6 +1,26 @@
 # Smart Parking System
 
+Group Member:
+
+- Wang, Huijia
+- Wang, Ke
+- Zhang, Tianhao
+- Sun, Yuming
+
+Supervisor:
+
+- Prof. Nascimento, Mario
+- Prof. Singh, Sarita
+
+
+
 ## Introduction
+
+This is a mobile application developed using the React Native framework.
+The app leverages public parking data provided by the Singapore government to train an LSTM (Long Short-Term Memory) machine learning model, which is deployed on AWS cloud services. Users can select their intended destination, and based on their driving time, the app provides predictive parking availability or real-time parking space information for nearby parking lots to assist with decision-making. Once a parking option is chosen, users are directed to Google Maps for navigation to their destination.
+
+---
+
 Our project consists of three parts.
 
 ### A mobile application
