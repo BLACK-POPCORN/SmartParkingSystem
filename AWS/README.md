@@ -45,6 +45,35 @@ The script for this Lambda function is [here](/AWS/Lambda/InvokeSageMaker.py).
 
 ## API Gateway
 The API Gateway is used to expose the Lambda function for invoking the SageMaker endpoint to the mobile client.
+This is the interface for the mobile client to get the prediction of the parking availability of a specific parking lot.
+
+*Example Request:*
+```bash
+curl --location 'https://<API Gateway IP>:<API Gateway Port>/predict' \
+--header 'x-api-key: <The key managed by API Gateway to avoid unauthorized use>' \
+--header 'Content-Type: application/json' \
+--data '{
+    "model_name": "A42"
+}'
+```
+
+*Example Response:*
+```json
+{
+    "predictions": [
+        [
+            73.2977829,
+            73.5226288,
+            74.0244293,
+            74.5294,
+            74.890274,
+            75.4954453,
+            75.9333878,
+            76.9265442
+        ]
+    ]
+}
+```
 
 ## RDS MySQL
 The RDS MySQL database is used to store the parking availability data. The schema of the database is in [this](/AWS/MySQL_CREATE_SCRIPT.sql) script file.
