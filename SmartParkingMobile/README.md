@@ -51,6 +51,6 @@ The parking lot list below will display detailed information, including the park
 
 Clicking the corresponding parking lot `TPMR` will direct to Google Map for navigation.
 
-![navigation](../assets/navigation.pPNGng)
+![navigation](../assets/navigation.PNG)
 
 
