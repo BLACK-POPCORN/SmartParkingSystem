@@ -12,8 +12,6 @@ const ParkingScreen = ({ route }) => {
   const [currentTime, setCurrentTime] = useState('');
   const [minutesToNextQuarter, setMinutesToNextQuarter] = useState(0);
   const parkingList = allParkinglots;
-  // console.log("all parkinglist should be ", parkingList)
-
 
   useEffect(() => {
     const now = new Date();
@@ -23,7 +21,6 @@ const ParkingScreen = ({ route }) => {
     setMinutesToNextQuarter(minutesRemaining);
     setCurrentTime(currentMinute);
   }, []); 
-
 
   const navigation = useNavigation();
   const { destination, currentLocation } = route.params;
@@ -98,7 +95,7 @@ const ParkingScreen = ({ route }) => {
         const returnDataPoint = calculateX(minutesToNextQuarter + drivingTime / 60);
 
 
-        // 更新预测结果
+        // update the result of prediction
         if (data.predictions && data.predictions.length > 0) {
           console.log("model Name", modelName, 'prediction parking lot', data.predictions)
           return data.predictions[0][returnDataPoint];
@@ -266,9 +263,6 @@ const ParkingScreen = ({ route }) => {
       await fetchWithRadius(radius); // Fetch parking lots when the component loads
       setLocationLoading(false);
     }
-    
-
-    
     fetchParkingLots();
   }, [destination]);
 
@@ -300,7 +294,6 @@ const ParkingScreen = ({ route }) => {
 
   const updateMapRegion = (places) => {
     if (places.length === 0) return;
-
     setRegion({
       latitude: (places[0].geometry.location.lat + region.latitude) / 2,
       longitude: (places[0].geometry.location.lng + region.longitude) / 2,
@@ -308,7 +301,6 @@ const ParkingScreen = ({ route }) => {
       longitudeDelta: 0.05,
     });
   };
-
 
   const handleLayout = (index, event) => {
     const { height } = event.nativeEvent.layout;
@@ -333,7 +325,6 @@ const ParkingScreen = ({ route }) => {
         <Text>Real-time Available Parking Lots: {item.carpark_info_available_lots}/{item.carpark_info_total_lots}</Text>
       ) : (
         <Text>Predictive Parking Lots: {Math.floor(item.prediction)}/{item.carpark_info_total_lots}</Text>
-
       )}
 
     </TouchableOpacity>
@@ -348,7 +339,6 @@ const ParkingScreen = ({ route }) => {
       return "red";
     }
   };
-
 
   const Legend = () => {
     return (
@@ -431,7 +421,6 @@ const ParkingScreen = ({ route }) => {
                 ? getMarkerColor(parking.carpark_info_available_lots)
                 : getMarkerColor(Math.floor(parking.prediction))
             }
-
             onPress={() => setSelectedParking(parking)}
             tracksViewChanges={true}
           />
