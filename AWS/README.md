@@ -3,7 +3,7 @@
 This project consists of the following AWS services:
 
 ## EC2 Server
-The [EC2 server](/AWS/EC2/server.py) is used to provide HTTP services to the [InvokeSageMaker](/InvokeSageMaker.py) Lambda function.
+The [EC2 server](/AWS/EC2/server.py) is used to provide HTTP services to the [InvokeSageMaker](/AWS/Lambda/InvokeSageMaker.py) Lambda function.
 It exposes two interfaces:
 
 ### GET /parkinglot
