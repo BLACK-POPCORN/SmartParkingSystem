@@ -23,9 +23,11 @@ The app leverages public parking data provided by the Singapore government to tr
 
 Our project consists of three parts.
 
-### A mobile application
+### Mobile application
 
    For details of this part, please refer to the [SmartParkingMobile](/SmartParkingMobile) directory.
+   
+   Use React-native framework as front-end.
 
 ### Machine Learning Model
 

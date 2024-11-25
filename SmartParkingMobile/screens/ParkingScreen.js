@@ -9,18 +9,8 @@ import allParkinglots from './parking_lots_names.js';
 import { Linking } from 'react-native';
 
 const ParkingScreen = ({ route }) => {
-  // const [currentTime, setCurrentTime] = useState('');
   const [minutesToNextQuarter, setMinutesToNextQuarter] = useState(0);
   const parkingList = allParkinglots;
-
-  useEffect(() => {
-    const now = new Date();
-    const currentMinute = now.getMinutes();
-    const nextQuarterMinute = Math.ceil(currentMinute / 15) * 15;
-    const minutesRemaining = nextQuarterMinute - currentMinute;
-    setMinutesToNextQuarter(minutesRemaining);
-    // setCurrentTime(currentMinute);
-  }, []); 
 
   const navigation = useNavigation();
   const { destination, currentLocation } = route.params;
@@ -39,6 +29,14 @@ const ParkingScreen = ({ route }) => {
   const [itemHeights, setItemHeights] = useState({});
   const [sortOption, setSortOption] = useState('distance'); // Default sort by distance
   const flatListRef = useRef(null);
+
+  useEffect(() => {
+    const now = new Date();
+    const currentMinute = now.getMinutes();
+    const nextQuarterMinute = Math.ceil(currentMinute / 15) * 15;
+    const minutesRemaining = nextQuarterMinute - currentMinute;
+    setMinutesToNextQuarter(minutesRemaining);
+  }, []); 
 
   // Sorting function based on selected option
   const sortParkings = (data) => {
@@ -64,7 +62,6 @@ const ParkingScreen = ({ route }) => {
   };
 
   useEffect(() => {
-
     const fetchPrediction = async (modelName, drivingTime) => {
       try {
         const response = await fetch('https://fb63u8anv3.execute-api.us-west-1.amazonaws.com/prod/predict', {
@@ -291,16 +288,6 @@ const ParkingScreen = ({ route }) => {
       index,
     };
   };
-
-  // const updateMapRegion = (places) => {
-  //   if (places.length === 0) return;
-  //   setRegion({
-  //     latitude: (places[0].geometry.location.lat + region.latitude) / 2,
-  //     longitude: (places[0].geometry.location.lng + region.longitude) / 2,
-  //     latitudeDelta: 0.05,
-  //     longitudeDelta: 0.05,
-  //   });
-  // };
 
   const handleLayout = (index, event) => {
     const { height } = event.nativeEvent.layout;
