@@ -1,21 +1,15 @@
-import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { screenOptions } from './style';
 import SearchScreen from './screens/SearchScreen';
 import { useNavigationContainerRef } from '@react-navigation/native';
 import ParkingScreen from './screens/ParkingScreen';
 
-
-
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-
-
 
 function Tabs() {
   return (

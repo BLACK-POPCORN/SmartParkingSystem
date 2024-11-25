@@ -9,7 +9,7 @@ import allParkinglots from './parking_lots_names.js';
 import { Linking } from 'react-native';
 
 const ParkingScreen = ({ route }) => {
-  const [currentTime, setCurrentTime] = useState('');
+  // const [currentTime, setCurrentTime] = useState('');
   const [minutesToNextQuarter, setMinutesToNextQuarter] = useState(0);
   const parkingList = allParkinglots;
 
@@ -19,7 +19,7 @@ const ParkingScreen = ({ route }) => {
     const nextQuarterMinute = Math.ceil(currentMinute / 15) * 15;
     const minutesRemaining = nextQuarterMinute - currentMinute;
     setMinutesToNextQuarter(minutesRemaining);
-    setCurrentTime(currentMinute);
+    // setCurrentTime(currentMinute);
   }, []); 
 
   const navigation = useNavigation();
@@ -138,7 +138,7 @@ const ParkingScreen = ({ route }) => {
 
         } else {
           return "cannot get the driving time"
-          Alert.alert("cannot get the driving time");
+          // Alert.alert("cannot get the driving time");
         }
       } catch (error) {
         console.error(error);
@@ -292,15 +292,15 @@ const ParkingScreen = ({ route }) => {
     };
   };
 
-  const updateMapRegion = (places) => {
-    if (places.length === 0) return;
-    setRegion({
-      latitude: (places[0].geometry.location.lat + region.latitude) / 2,
-      longitude: (places[0].geometry.location.lng + region.longitude) / 2,
-      latitudeDelta: 0.05,
-      longitudeDelta: 0.05,
-    });
-  };
+  // const updateMapRegion = (places) => {
+  //   if (places.length === 0) return;
+  //   setRegion({
+  //     latitude: (places[0].geometry.location.lat + region.latitude) / 2,
+  //     longitude: (places[0].geometry.location.lng + region.longitude) / 2,
+  //     latitudeDelta: 0.05,
+  //     longitudeDelta: 0.05,
+  //   });
+  // };
 
   const handleLayout = (index, event) => {
     const { height } = event.nativeEvent.layout;
@@ -440,7 +440,7 @@ const ParkingScreen = ({ route }) => {
           data={parkings}
           keyExtractor={(item) => item.place_id.toString()}
           renderItem={renderPlace}
-          ListEmptyComponent={<Text>Sorry! There is no public parking lot nearby!</Text>}
+          ListEmptyComponent={<Text>Sorry! There is no public parking lot nearby 10 km!</Text>}
           getItemLayout={getItemLayout}
           onScrollToIndexFailed={(info) => {
             console.warn('Failed to scroll to index:', info);
