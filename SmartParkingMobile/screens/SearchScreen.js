@@ -246,25 +246,6 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height * 0.2,
   },
-  restaurantContainer: {
-    padding: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  restaurantName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  restaurantAddress: {
-    fontSize: 14,
-    color: '#666',
-  },
-  restaurantPhoto: {
-    width: '100%',
-    height: 150,
-    marginTop: 10,
-    borderRadius: 4,
-  },
 
   desContainer: {
     padding: 8,
