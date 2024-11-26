@@ -25,7 +25,7 @@ Our project consists of three parts.
    Use React-native framework as front-end.
 
 ### Machine Learning Model
-
+   Our machine learning models predict parking availability using historical data and precipitation data. We employ Long Short-Term Memory (LSTM) neural networks to capture temporal dependencies in the data. 
    For details of this part, please refer to the [ML](/ML) directory.
 
 ### AWS Backend 
