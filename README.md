@@ -1,11 +1,28 @@
 # Smart Parking System
 
+Group Member:
+
+- Wang, Huijia
+- Wang, Ke
+- Zhang, Tianhao
+- Sun, Yuming
+
+Supervisor:
+
+- Prof. Nascimento, Mario
+- Prof. Singh, Sarita
+
+
+
 ## Introduction
+
 Our project consists of three parts.
 
-### A mobile application
+### Mobile application
 
    For details of this part, please refer to the [SmartParkingMobile](/SmartParkingMobile) directory.
+   
+   Use React-native framework as front-end.
 
 ### Machine Learning Model
 

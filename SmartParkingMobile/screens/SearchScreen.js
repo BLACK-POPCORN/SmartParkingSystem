@@ -93,29 +93,28 @@ const SearchScreen = ({ navigation }) => {
       const singaporeResults=response.data.results.filter((place) =>
         place.formatted_address.includes("Singapore")
     );
-
       // setPlaces(singaporeResults);
-      // 获取用户当前位置
+      // Get the user's current location
     const userLocation = {
       latitude: singaporeLocation.lat,
       longitude: singaporeLocation.lng,
     };
 
-    // 计算每个地点与用户位置的距离并排序
+    // Calculate the distance between each location and the user's location and sort them
     const resultsWithDistance = singaporeResults.map((place) => {
       const placeLocation = {
         latitude: place.geometry.location.lat,
         longitude: place.geometry.location.lng,
       };
 
-      const distance = haversine(userLocation, placeLocation); // 距离单位为米
+      const distance = haversine(userLocation, placeLocation); // Distance in meters
       return { ...place, distance };
     });
 
-    // 按距离排序
+    // Sort by distance
     const sortedResults = resultsWithDistance.sort((a, b) => a.distance - b.distance);
 
-    // 设置排序后的结果
+    // Set the sorted results
     setPlaces(sortedResults);
     
     } catch (error) {
@@ -129,9 +128,9 @@ const SearchScreen = ({ navigation }) => {
     return `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${googlePlacesApiKey}`;
   };
 
-  const handlePlacePress = (restaurant) => {
-    setSelectedPlace(restaurant);
-    navigation.navigate('Parking', { destination: restaurant.geometry.location, currentLocation:region });
+  const handlePlacePress = (dest) => {
+    setSelectedPlace(dest);
+    navigation.navigate('Parking', { destination: dest.geometry.location, currentLocation:region });
   };
 
   const handleLayout = (index, event) => {
@@ -142,17 +141,17 @@ const SearchScreen = ({ navigation }) => {
   const renderPlace = ({ item, index }) => (
     <TouchableOpacity
       onPress={() => handlePlacePress(item)}
-      style={styles.restaurantContainer}
+      style={styles.desContainer}
       onLayout={(event) => handleLayout(index, event)}
     >
       {item.photos && item.photos.length > 0 && (
         <Image
           source={{ uri: getPhotoUrl(item.photos[0].photo_reference) }}
-          style={styles.restaurantPhoto}
+          style={styles.desPhoto}
         />
       )}
-      <Text style={styles.restaurantName}>{item.name}</Text>
-      <Text style={styles.restaurantAddress}>{item.formatted_address}</Text>
+      <Text style={styles.desName}>{item.name}</Text>
+      <Text style={styles.desAddress}>{item.formatted_address}</Text>
       <Text>Rating: {item.rating} stars</Text>
       <Text>Number of Ratings: {item.user_ratings_total}</Text>
     </TouchableOpacity>
@@ -190,16 +189,16 @@ const SearchScreen = ({ navigation }) => {
           description="This is your current location"
           pinColor="blue"
         />
-        {places.map((restaurant) => (
+        {places.map((dest) => (
           <Marker
-            key={restaurant.place_id}
+            key={dest.place_id}
             coordinate={{
-              latitude: restaurant.geometry.location.lat,
-              longitude: restaurant.geometry.location.lng,
+              latitude: dest.geometry.location.lat,
+              longitude: dest.geometry.location.lng,
             }}
-            title={restaurant.name}
-            description={restaurant.formatted_address}
-            onPress={() => setSelectedPlace(restaurant)}
+            title={dest.name}
+            description={dest.formatted_address}
+            onPress={() => setSelectedPlace(dest)}
           />
         ))}
       </MapView>
@@ -247,20 +246,21 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height * 0.2,
   },
-  restaurantContainer: {
+
+  desContainer: {
     padding: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
-  restaurantName: {
+  desName: {
     fontSize: 18,
     fontWeight: 'bold',
   },
-  restaurantAddress: {
+  desAddress: {
     fontSize: 14,
     color: '#666',
   },
-  restaurantPhoto: {
+  desPhoto: {
     width: '100%',
     height: 150,
     marginTop: 10,
