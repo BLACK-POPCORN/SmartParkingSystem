@@ -98,7 +98,7 @@ const ParkingScreen = ({ route }) => {
           return data.predictions[0][returnDataPoint];
 
         } else {
-          return "No predictions found";
+          return -1;
         }
       } catch (error) {
         console.error('Error:', error);
@@ -215,7 +215,7 @@ const ParkingScreen = ({ route }) => {
                 const distanceToParking = await getDistanceToParking(destination, item1.geometry.location);
                 const drivingTimeFromGoogle = await getDriveTime(item1.geometry.location);
                 const predictionFromAPI = await fetchPrediction(item1.name, drivingTimeFromGoogle);
-
+                console.log("predictionfromapi is", predictionFromAPI)
                 return {
                   ...item1,
                   carpark_info_total_lots: matchingCarpark.carpark_info[0].total_lots,
@@ -308,7 +308,7 @@ const ParkingScreen = ({ route }) => {
       {/* <Text>prediction Lots: {Math.floor(item.prediction)}</Text> */}
       <Text>Driving from current location: {(item.drivingTime / 60).toFixed(1)} mins</Text>
       <Text>Distance to Destination: {item.distanceToDestination || "N/A"}</Text>
-      {item.drivingTime < 300 ? (
+      {item.drivingTime < 300 || item.prediction === -1  ? (
         <Text>Real-time Available Parking Lots: {item.carpark_info_available_lots}/{item.carpark_info_total_lots}</Text>
       ) : (
         <Text>Predictive Parking Lots: {Math.floor(item.prediction)}/{item.carpark_info_total_lots}</Text>
