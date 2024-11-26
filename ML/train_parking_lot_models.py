@@ -301,7 +301,7 @@ def main():
     print(f"Found {len(all_parking_lots)} parking lots.")
 
     # Select the number of parking lots to process
-    n = 1  # Modify n as needed
+    n = 100  # Modify n as needed
 
     # Randomly select n parking lots
     selected_parking_lots = random.sample(all_parking_lots, n)
