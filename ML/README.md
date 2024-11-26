@@ -47,6 +47,25 @@ python train_and_export_parking_lot_models.py
 - Trains a multi-step prediction LSTM model for each parking lot.
 - Exports the trained models for deployment and compresses them into `.tar.gz` files in the `deploy_lstm/` directory.
 
+#### `train_single_model.py`
+
+This script trains LSTM models for a single parking lot. Ensure that train_single_model.py, the parking lot CSV file (e.g., W187.csv), and the weather data CSV file (e.g., data.csv) are in the same directory. Modify the script to specify the parking lot you want to train the model for by changing the parking_file_path variable.
+
+**Usage:**
+
+```bash
+python train_single_model.py
+```
+
+**Features:**
+
+Trains two models for the specified parking lot:
+
+- **Model 1:** Uses only time-related features.
+- **Model 2:** Uses time-related features and precipitation data.
+
+Saves the trained models in the current directory.
+
 ### 2. Evaluating Models
 
 #### `evaluate_parking_lot_models.py`
@@ -65,6 +84,24 @@ python evaluate_parking_lot_models.py
 - Calculates evaluation metrics: SMAPE, MAPE, and Percentage RMSE.
 - Performs statistical significance tests (paired t-tests).
 - Generates plots to visualize the results.
+
+#### `evaluate_single_model.py`
+
+This script evaluates the performance of models for a single parking lot. Ensure that evaluate_single_model.py, the parking lot CSV file (e.g., W187.csv), and the weather data CSV file (e.g., data.csv) are in the same directory. Modify the script to specify the parking lot you want to evaluate the model for by changing the parking_file_path variable.
+
+**Usage:**
+
+```bash
+python evaluate_single_model.py
+```
+
+**Features:**
+
+- Evaluates the performance of the two models trained for the specified parking lot.
+- Calculates evaluation metrics: RMSE, MAE, MSE, SMAPE, and Percentage RMSE.
+- Performs statistical significance tests (paired t-tests).
+- Generates plots to visualize the results and compare the models
+
 
 ### 3. Utility Scripts
 
